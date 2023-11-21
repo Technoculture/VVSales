@@ -1,31 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { StatusBar } from "expo-status-bar";
-import { Platform, TouchableOpacity } from "react-native";
+import { Platform, PlatformColor, TouchableOpacity } from "react-native";
 import { Camera, CameraType } from "expo-camera";
 import { Audio } from "expo-av";
-import { WaveSurfer } from "wavesurfer-react";
+import { FlashList } from "@shopify/flash-list";
 
 import { Text, View } from "../components/Themed";
+import { ExternalLink } from "../components/ExternalLink";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 import OpenAI from "openai";
-import lancedb from "vectordb";
-
-async function search(vector) {
-  console.log(lancedb);
-  const db = await lancedb.connect("data/sample-lancedb");
-
-  const table = await db.createTable("vectors", [
-    { id: 1, vector: [0.1, 0.2], item: "foo", price: 10 },
-    { id: 2, vector: [1.1, 1.2], item: "bar", price: 50 },
-  ]);
-
-  const query = table.search(vector).limit(2);
-  const results = await query.execute();
-
-  console.log(results);
-  return results;
-}
+import { Link } from "expo-router";
 
 const openai = new OpenAI({
   apiKey: process.env["OPENAI_API_KEY"],
@@ -39,10 +24,10 @@ interface RoundedButtonProps {
 export function RoundedButton({ trigger, icon }: RoundedButtonProps) {
   return (
     <TouchableOpacity
-      className="bg-green-600 h-20 w-20 rounded-full items-center justify-center shadow-inner"
+      className="bg-green-600 dark:bg-green-700 h-20 w-20 rounded-full items-center justify-center shadow-inner"
       onPress={trigger}
     >
-      <Ionicons name={icon} size={32} color="white" className="shadow-2xl" />
+      <Ionicons name={icon} size={32} color={"white"} className="shadow-2xl" />
     </TouchableOpacity>
   );
 }
@@ -53,26 +38,104 @@ interface MessageBlobType {
   audio?: string;
 }
 
+interface AudioPlayerProps {
+  url: string;
+  state: "playing" | "paused";
+}
+
+export function AudioPlayer({ url, state }: AudioPlayerProps) {
+  const [isPlaying, setPlaying] = useState(state === "playing");
+
+  return (
+    <View className="flex-2 bg-transparent gap-2">
+      <View className="flex-2 flex-row gap-[1px] bg-transparent justify-center items-center">
+        <TouchableOpacity
+          onPress={() => {
+            setPlaying(!isPlaying);
+          }}
+        >
+          <Ionicons
+            name={isPlaying ? "pause" : "play"}
+            size={32}
+          />
+        </TouchableOpacity>
+        {Array.from({ length: 20 }, (_, index) => {
+          const randomNumber = Math.floor(Math.random() * 10) * 2;
+          return (
+            <View
+              className="w-1 bg-green-500 rounded-full"
+              key={index}
+              height={randomNumber}
+            />
+          );
+        })}
+      </View>
+      {/*
+      <ExternalLink className="flex" href={url}>
+        <Ionicons name="download-outline" size={20} />
+      </ExternalLink>
+      */}
+    </View>
+  );
+}
+
 export function MessageBlob(props: MessageBlobType) {
   const { type, text, audio } = props;
 
-  const baseStyle = "py-2 px-4 rounded-full mb-2";
+  const baseStyle = "py-3 px-4 rounded-2xl mb-2";
   let variantStyle = " ";
   if (type == "human") {
-    variantStyle += "bg-slate-200 mr-auto";
+    variantStyle += "bg-green-300 dark:bg-green-900 ml-auto";
   } else if (type == "ai") {
-    variantStyle += "bg-green-300 ml-auto";
+    variantStyle += "bg-slate-100 dark:bg-neutral-900 mr-auto";
   }
 
   return (
     <View className={`${baseStyle} ${variantStyle}`}>
-      {audio != "" ? <WaveSurfer /> : <Text>{text}</Text>}
+      <Text className="text-slate-100 dark:text-green-100">{type === "ai" ? "Ella" : "Satyam"}</Text>
+      {audio != null ? (
+        <AudioPlayer url={audio} state="paused" />
+      ) : (
+        <Text className="text-slate-100 dark:text-slate-100">{text}</Text>
+      )}
     </View>
   );
 }
 
 let messages: MessageBlobType[] = [
-  { type: "human", text: "Hi", audio: "filename.mp3" },
+  {
+    type: "human",
+    text: "Hi",
+    audio: "https://d7ftvotrexusa.cloudfront.net/chataudio/1340/G4mv3Y9.mpeg",
+  },
+  { type: "ai", text: "Hi Human!" },
+  {
+    type: "human",
+    text: "Hi",
+    audio: "https://d7ftvotrexusa.cloudfront.net/chataudio/1340/G4mv3Y9.mpeg",
+  },
+  { type: "ai", text: "Hi Human!" },
+  {
+    type: "human",
+    text: "Hi",
+    audio: "https://d7ftvotrexusa.cloudfront.net/chataudio/1340/G4mv3Y9.mpeg",
+  },
+  { type: "ai", text: "Hi Human!" },
+  { type: "human", text: "Nice to meet you" },
+  { type: "ai", text: "Hi Human!" },
+  {
+    type: "human",
+    text: "Hi",
+    audio: "https://d7ftvotrexusa.cloudfront.net/chataudio/1340/G4mv3Y9.mpeg",
+  },
+  { type: "ai", text: "Hi Human!" },
+  { type: "human", text: "Nice to meet you" },
+  { type: "ai", text: "Hi Human!" },
+  {
+    type: "human",
+    text: "Hi",
+    audio: "https://d7ftvotrexusa.cloudfront.net/chataudio/1340/G4mv3Y9.mpeg",
+  },
   { type: "ai", text: "Hi Human!" },
   { type: "human", text: "Nice to meet you" },
 ];
@@ -112,26 +175,25 @@ export default function HomeScreen() {
 
   return (
     <View className="flex-1">
-      <View className="flex-3 items-center justify-center gap-6 bg-green-100">
-        <View className="flex-row gap-2 bg-green-100">
-          <Text className="text-2xl font-bold">Ella</Text>
+      <View className="flex-3 items-center justify-center gap-6 bg-cyan-50 dark:bg-stone-900">
+        <View className="flex-row gap-2 bg-transparent">
+          <Text className="text-2xl font-bold text-stone-100 dark:text-stone-300">Ella</Text>
         </View>
-        <View className="w-[80%] h-[70%] bg-white/50 rounded-xl shadow-xl p-4">
-          {msgs.map((blob, index) => (
-            <MessageBlob type={blob.type} text={blob.text} key={index} />
-          ))}
+        <View className="w-[80%] h-[70%] rounded-xl overflow-hidden bg-yellow-100 dark:bg-zinc-950">
+          <View className="h-12 w-full bg-yellow-900 dark:bg-amber-950 shadow-xl" />
+          <FlashList
+            renderItem={({ item }: { item: MessageBlobType }) => <MessageBlob {...item} />}
+            estimatedItemSize={msgs.length}
+            data={msgs}
+          />
+          <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
         </View>
-        <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
       </View>
-      <View className="bg-green-300 flex-1 flex-row items-center justify-center shadow-2xl">
-        <RoundedButton
-          icon="add-sharp"
-          size="small"
-          trigger={async () => await search([0.1, 0.3])}
-        />
+      <View className="bg-green-300 dark:bg-stone-950 flex-1 flex-row items-center justify-center shadow-2xl">
+        <RoundedButton icon="grid" type="secondary" />
         <RoundedButton
           icon="call"
-          size="default"
+          type="primary"
           trigger={async () => await talk()}
         />
         <RoundedButton

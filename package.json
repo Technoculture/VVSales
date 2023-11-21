@@ -16,6 +16,8 @@
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",
     "@react-navigation/native": "^6.0.2",
+    "@shopify/flash-list": "1.4.3",
+    "@shopify/react-native-skia": "0.1.196",
     "cva": "^0.0.0",
     "expo": "~49.0.15",
     "expo-av": "~13.4.1",
@@ -42,8 +44,7 @@
     "react-native-web": "~0.19.6",
     "sqlite-vss": "^0.1.2",
     "vectordb": "^0.3.7",
-    "wavesurfer-react": "^2.2.3",
-    "wavesurfer.js": "^7.4.5"
+    "wavesurfer.js": "^7.4.6"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
