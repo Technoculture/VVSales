@@ -1,16 +1,24 @@
 import { useState, useEffect, useRef } from "react";
 import { StatusBar } from "expo-status-bar";
-import { Platform, PlatformColor, TouchableOpacity } from "react-native";
+import {
+  Platform,
+  PlatformColor,
+  TouchableOpacity,
+  useWindowDimensions,
+} from "react-native";
+import { getStatusBarHeight } from "react-native-safearea-height";
 import { Camera, CameraType } from "expo-camera";
 import { Audio } from "expo-av";
 import { FlashList } from "@shopify/flash-list";
 
+import { SafeAreaView } from "react-native";
 import { Text, View } from "../components/Themed";
 import { ExternalLink } from "../components/ExternalLink";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 import OpenAI from "openai";
 import { Link } from "expo-router";
+import { isAudioEnabled } from "expo-av/build/Audio/AudioAvailability";
 
 const openai = new OpenAI({
   apiKey: process.env["OPENAI_API_KEY"],
@@ -19,15 +27,20 @@ const openai = new OpenAI({
 interface RoundedButtonProps {
   trigger: () => void;
   icon: string;
+  className?: string;
 }
 
-export function RoundedButton({ trigger, icon }: RoundedButtonProps) {
+export function RoundedButton({
+  trigger,
+  icon,
+  className,
+}: RoundedButtonProps) {
   return (
     <TouchableOpacity
-      className="bg-green-600 dark:bg-green-700 h-20 w-20 rounded-full items-center justify-center shadow-inner"
+      className={`bg-green-600 dark:bg-green-950 h-20 w-20 rounded-full items-center justify-center ${className}`}
       onPress={trigger}
     >
-      <Ionicons name={icon} size={32} color={"white"} className="shadow-2xl" />
+      <Ionicons name={icon} size={32} color={"white"} className="" />
     </TouchableOpacity>
   );
 }
@@ -54,10 +67,7 @@ export function AudioPlayer({ url, state }: AudioPlayerProps) {
             setPlaying(!isPlaying);
           }}
         >
-          <Ionicons
-            name={isPlaying ? "pause" : "play"}
-            size={32}
-          />
+          <Ionicons name={isPlaying ? "pause" : "play"} size={32} />
         </TouchableOpacity>
         {Array.from({ length: 20 }, (_, index) => {
           const randomNumber = Math.floor(Math.random() * 10) * 2;
@@ -70,11 +80,6 @@ export function AudioPlayer({ url, state }: AudioPlayerProps) {
           );
         })}
       </View>
-      {/*
-      <ExternalLink className="flex" href={url}>
-        <Ionicons name="download-outline" size={20} />
-      </ExternalLink>
-      */}
     </View>
   );
 }
@@ -82,21 +87,34 @@ export function AudioPlayer({ url, state }: AudioPlayerProps) {
 export function MessageBlob(props: MessageBlobType) {
   const { type, text, audio } = props;
 
-  const baseStyle = "py-3 px-4 rounded-2xl mb-2";
+  const [inAudioMode, setInAudioMode] = useState(true);
+
+  const baseStyle = "py-3 px-4 rounded-2xl mb-2 gap-1";
   let variantStyle = " ";
   if (type == "human") {
-    variantStyle += "bg-green-300 dark:bg-green-900 ml-auto";
+    variantStyle += "bg-green-300 dark:bg-green-950 ml-auto";
   } else if (type == "ai") {
-    variantStyle += "bg-slate-100 dark:bg-neutral-900 mr-auto";
+    variantStyle += "bg-slate-100 dark:bg-zinc-900 mr-auto";
   }
 
   return (
     <View className={`${baseStyle} ${variantStyle}`}>
-      <Text className="text-slate-100 dark:text-green-100">{type === "ai" ? "Ella" : "Satyam"}</Text>
+      <View className="flex-row flex-1 bg-transparent">
+        <Text className="text-slate-700 dark:text-green-100">
+          {type === "ai" ? "Ella" : "Satyam"}
+        </Text>
+        { audio != null ? (
+        <TouchableOpacity onPress={() => setInAudioMode(!inAudioMode)}>
+          { /* <Ionicons name="chatbubble-bubble" className="flex-1 p-2 bg-green-100" /> */ }
+          <Ionicons name={ inAudioMode ? "play-outline" : "chatbubble-outline"  } className="flex-1 p-2 bg-green-100" />
+        </TouchableOpacity>
+        ) : null}
+      </View>
       {audio != null ? (
-        <AudioPlayer url={audio} state="paused" />
+        inAudioMode ?
+        <AudioPlayer url={audio} state="paused" /> : <Text className="text-slate-900 dark:text-slate-100">{text}</Text>
       ) : (
-        <Text className="text-slate-100 dark:text-slate-100">{text}</Text>
+        <Text className="text-slate-900 dark:text-slate-100">{text}</Text>
       )}
     </View>
   );
@@ -173,35 +191,48 @@ export default function HomeScreen() {
     );
   }
 
+  //const { screenHeightuseWindowDimensions } = useWindowDimensions();
+  const {height} = useWindowDimensions();
+  const screenHeight = height;
+  const safeScreenHeight = height - getStatusBarHeight(true);
+  const footerHeight = 160;
+  const canvasHeight = safeScreenHeight - footerHeight;
+  console.log(`${screenHeight}, ${safeScreenHeight}, ${footerHeight}, ${canvasHeight}`);
+
   return (
-    <View className="flex-1">
-      <View className="flex-3 items-center justify-center gap-6 bg-cyan-50 dark:bg-stone-900">
-        <View className="flex-row gap-2 bg-transparent">
-          <Text className="text-2xl font-bold text-stone-100 dark:text-stone-300">Ella</Text>
-        </View>
-        <View className="w-[80%] h-[70%] rounded-xl overflow-hidden bg-yellow-100 dark:bg-zinc-950">
-          <View className="h-12 w-full bg-yellow-900 dark:bg-amber-950 shadow-xl" />
+    <SafeAreaView className="flex-1 bg-cyan-50" style={{ height: screenHeight }}>
+      <View
+        className="items-center justify-center bg-cyan-50 dark:bg-indigo-950"
+        style={{ width: "100%", height: canvasHeight }}
+      >
+        <View className="flex-1 w-[90%] mx-2 my-6 bg-yellow dark:bg-zinc-950 rounded-xl overflow-hidden">
+          <View className="h-12 bg-yellow-800 dark:bg-amber-900"></View>
           <FlashList
-            renderItem={({ item }: { item: MessageBlobType }) => <MessageBlob {...item} />}
-            estimatedItemSize={msgs.length}
+            renderItem={({ item }) => <MessageBlob {...item} />}
+            estimatedItemSize={50}
             data={msgs}
+            contentContainerStyle={{ padding: 15 }}
           />
-          <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
         </View>
       </View>
-      <View className="bg-green-300 dark:bg-stone-950 flex-1 flex-row items-center justify-center shadow-2xl">
-        <RoundedButton icon="grid" type="secondary" />
+
+      <View
+        className="flex-row items-center justify-center bg-green-300 dark:bg-stone-950 p-2 mb-2"
+        style={{ height: footerHeight }}
+      >
+        <RoundedButton icon="grid" type="secondary" className="mr-2" />
         <RoundedButton
           icon="call"
           type="primary"
+          className="mx-2"
           trigger={async () => await talk()}
         />
         <RoundedButton
           icon="camera"
-          size="small"
+          className="ml-2"
           trigger={() => console.log("Camera")}
         />
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
