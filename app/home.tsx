@@ -92,21 +92,20 @@ export function MessageBlob(props: MessageBlobType) {
   const baseStyle = "py-3 px-4 rounded-2xl mb-2 gap-1";
   let variantStyle = " ";
   if (type == "human") {
-    variantStyle += "bg-green-300 dark:bg-green-950 ml-auto";
+    variantStyle += "bg-green-300 dark:bg-green-700 ml-auto";
   } else if (type == "ai") {
-    variantStyle += "bg-slate-100 dark:bg-zinc-900 mr-auto";
+    variantStyle += "bg-slate-100 dark:bg-amber-800 mr-auto";
   }
 
   return (
     <View className={`${baseStyle} ${variantStyle}`}>
-      <View className="flex-row flex-1 bg-transparent">
-        <Text className="text-slate-700 dark:text-green-100">
+      <View className="flex-row flex-1 bg-transparent items-center">
+        <Text className="text-slate-700 dark:text-green-200 flex-grow">
           {type === "ai" ? "Ella" : "Satyam"}
         </Text>
         { audio != null ? (
         <TouchableOpacity onPress={() => setInAudioMode(!inAudioMode)}>
-          { /* <Ionicons name="chatbubble-bubble" className="flex-1 p-2 bg-green-100" /> */ }
-          <Ionicons name={ inAudioMode ? "play-outline" : "chatbubble-outline"  } className="flex-1 p-2 bg-green-100" />
+          <Ionicons name={ inAudioMode ? "play-outline" : "chatbubble-outline"  } className="flex-1 p-2" />
         </TouchableOpacity>
         ) : null}
       </View>
@@ -200,13 +199,13 @@ export default function HomeScreen() {
   console.log(`${screenHeight}, ${safeScreenHeight}, ${footerHeight}, ${canvasHeight}`);
 
   return (
-    <SafeAreaView className="flex-1 bg-cyan-50" style={{ height: screenHeight }}>
+    <SafeAreaView className="flex-1 bg-cyan-50 dark:bg-gray-900" style={{ height: screenHeight }}>
       <View
-        className="items-center justify-center bg-cyan-50 dark:bg-indigo-950"
+        className="relative items-center justify-center bg-cyan-50 dark:bg-gray-900"
         style={{ width: "100%", height: canvasHeight }}
       >
-        <View className="flex-1 w-[90%] mx-2 my-6 bg-yellow dark:bg-zinc-950 rounded-xl overflow-hidden">
-          <View className="h-12 bg-yellow-800 dark:bg-amber-900"></View>
+        <View className="absolute h-[90%] w-[90%] mx-2 my-6 dark:bg-gray-950 rounded-xl overflow-hidden">
+          <View className="h-12 bg-yellow-800 dark:bg-amber-950/80"></View>
           <FlashList
             renderItem={({ item }) => <MessageBlob {...item} />}
             estimatedItemSize={50}
@@ -217,7 +216,7 @@ export default function HomeScreen() {
       </View>
 
       <View
-        className="flex-row items-center justify-center bg-green-300 dark:bg-stone-950 p-2 mb-2"
+        className="flex-row items-center justify-center bg-green-300 dark:bg-gray-950 p-2 mb-2"
         style={{ height: footerHeight }}
       >
         <RoundedButton icon="grid" type="secondary" className="mr-2" />
