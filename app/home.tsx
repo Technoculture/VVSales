@@ -1,19 +1,14 @@
 import React, { useState } from "react";
-import { TouchableOpacity, useWindowDimensions } from "react-native";
+import { TouchableOpacity, useWindowDimensions, SafeAreaView, Platform, PlatformColor, } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Camera, CameraType } from "expo-camera";
 import { Audio } from "expo-av";
 import { getStatusBarHeight } from "react-native-safearea-height";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { View, Text } from "../components/Themed";
-import { SafeAreaView } from "react-native";
 import OpenAI from "openai";
 import { Link } from "expo-router";
 import { ChatCard } from './ChatCard';
-import {
-  Platform,
-  PlatformColor,
-} from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { ExternalLink } from "../components/ExternalLink";
 import { isAudioEnabled } from "expo-av/build/Audio/AudioAvailability";
