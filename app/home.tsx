@@ -1,24 +1,23 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
+import { TouchableOpacity, useWindowDimensions } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { Camera, CameraType } from "expo-camera";
+import { Audio } from "expo-av";
+import { getStatusBarHeight } from "react-native-safearea-height";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { View, Text } from "../components/Themed";
+import { SafeAreaView } from "react-native";
+import OpenAI from "openai";
+import { Link } from "expo-router";
+import { ChatCard } from './ChatCard';
 import {
   Platform,
   PlatformColor,
-  TouchableOpacity,
-  useWindowDimensions,
 } from "react-native";
-import { getStatusBarHeight } from "react-native-safearea-height";
-import { Camera, CameraType } from "expo-camera";
-import { Audio } from "expo-av";
 import { FlashList } from "@shopify/flash-list";
-
-import { SafeAreaView } from "react-native";
-import { Text, View } from "../components/Themed";
 import { ExternalLink } from "../components/ExternalLink";
-import Ionicons from "@expo/vector-icons/Ionicons";
-
-import OpenAI from "openai";
-import { Link } from "expo-router";
 import { isAudioEnabled } from "expo-av/build/Audio/AudioAvailability";
+import { useNavigation } from '@react-navigation/native';
 
 const openai = new OpenAI({
   apiKey: process.env["OPENAI_API_KEY"],
@@ -34,7 +33,7 @@ export function RoundedButton({
   trigger,
   icon,
   className,
-}: RoundedButtonProps) {
+}: RoundedButtonProps): React.JSX.Element {
   return (
     <TouchableOpacity
       className={`bg-green-600 dark:bg-green-950 h-20 w-20 rounded-full items-center justify-center ${className}`}
@@ -119,43 +118,6 @@ export function MessageBlob(props: MessageBlobType) {
   );
 }
 
-let messages: MessageBlobType[] = [
-  {
-    type: "human",
-    text: "Hi",
-    audio: "https://d7ftvotrexusa.cloudfront.net/chataudio/1340/G4mv3Y9.mpeg",
-  },
-  { type: "ai", text: "Hi Human!" },
-  {
-    type: "human",
-    text: "Hi",
-    audio: "https://d7ftvotrexusa.cloudfront.net/chataudio/1340/G4mv3Y9.mpeg",
-  },
-  { type: "ai", text: "Hi Human!" },
-  {
-    type: "human",
-    text: "Hi",
-    audio: "https://d7ftvotrexusa.cloudfront.net/chataudio/1340/G4mv3Y9.mpeg",
-  },
-  { type: "ai", text: "Hi Human!" },
-  { type: "human", text: "Nice to meet you" },
-  { type: "ai", text: "Hi Human!" },
-  {
-    type: "human",
-    text: "Hi",
-    audio: "https://d7ftvotrexusa.cloudfront.net/chataudio/1340/G4mv3Y9.mpeg",
-  },
-  { type: "ai", text: "Hi Human!" },
-  { type: "human", text: "Nice to meet you" },
-  { type: "ai", text: "Hi Human!" },
-  {
-    type: "human",
-    text: "Hi",
-    audio: "https://d7ftvotrexusa.cloudfront.net/chataudio/1340/G4mv3Y9.mpeg",
-  },
-  { type: "ai", text: "Hi Human!" },
-  { type: "human", text: "Nice to meet you" },
-];
 
 export default function HomeScreen() {
   const [type, setType] = useState(CameraType.back);
@@ -163,7 +125,6 @@ export default function HomeScreen() {
 
   const [sound, setSound] = useState();
 
-  const [msgs, setMsgs] = useState(messages);
 
   async function talk() {
     setMsgs([...msgs, { type: "ai", text: "..." }]);
@@ -190,7 +151,6 @@ export default function HomeScreen() {
     );
   }
 
-  //const { screenHeightuseWindowDimensions } = useWindowDimensions();
   const {height} = useWindowDimensions();
   const screenHeight = height;
   const safeScreenHeight = height - getStatusBarHeight(true);
@@ -200,21 +160,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-cyan-50 dark:bg-gray-900" style={{ height: screenHeight }}>
-      <View
-        className="relative items-center justify-center bg-cyan-50 dark:bg-gray-900"
-        style={{ width: "100%", height: canvasHeight }}
-      >
-        <View className="absolute h-[90%] w-[90%] mx-2 my-6 dark:bg-gray-950 rounded-xl overflow-hidden">
-          <View className="h-12 bg-yellow-800 dark:bg-amber-950/80"></View>
-          <FlashList
-            renderItem={({ item }) => <MessageBlob {...item} />}
-            estimatedItemSize={50}
-            data={msgs}
-            contentContainerStyle={{ padding: 15 }}
-          />
-        </View>
-      </View>
-
+      <ChatCard openai={openai} />
       <View
         className="flex-row items-center justify-center bg-green-300 dark:bg-gray-950 p-2 mb-2"
         style={{ height: footerHeight }}

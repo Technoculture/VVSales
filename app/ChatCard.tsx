@@ -1,69 +1,75 @@
-import React, { useState } from "react";
-import { Text, View, TouchableOpacity, ViewProps } from "react-native";
+import { useState, useEffect, useRef } from "react";
+import {
+  TouchableOpacity,
+  useWindowDimensions,
+} from "react-native";
+import { getStatusBarHeight } from "react-native-safearea-height";
+import { Camera, CameraType } from "expo-camera";
+import { Audio } from "expo-av";
 import { FlashList } from "@shopify/flash-list";
-import { Ionicons } from "@expo/vector-icons";
 
-// Interface for the CustomViewProps
-interface CustomViewProps extends ViewProps {
-  customHeight: number;
+import { SafeAreaView } from "react-native";
+import { Text, View } from "../components/Themed";
+import { ExternalLink } from "../components/ExternalLink";
+import Ionicons from "@expo/vector-icons/Ionicons";
+
+import OpenAI from "openai";
+import { Link } from "expo-router";
+import { isAudioEnabled } from "expo-av/build/Audio/AudioAvailability";
+
+const openai = new OpenAI({
+  apiKey: process.env["OPENAI_API_KEY"],
+});
+
+
+interface ChatCardProps {
+  openai: any; // Replace with the correct type
 }
 
-// CustomView component
-const CustomView: React.FC<CustomViewProps> = ({ customHeight, ...rest }) => {
-  return <View style={{ height: customHeight, ...(rest.style as object) }} {...rest} />;
-};
-
-// Interface for the MessageBlobType
 interface MessageBlobType {
   type: "human" | "ai";
   text?: string;
   audio?: string;
 }
 
-// Interface for the AudioPlayerProps
 interface AudioPlayerProps {
   url: string;
   state: "playing" | "paused";
 }
 
-// AudioPlayer component
-const AudioPlayer: React.FC<AudioPlayerProps> = ({ url, state }) => {
+export function AudioPlayer({ url, state }: AudioPlayerProps) {
   const [isPlaying, setPlaying] = useState(state === "playing");
 
   return (
-    <View style={{ flex: 2, backgroundColor: "transparent", flexDirection: "row", gap: 2 }}>
-      <View style={{ flex: 2, flexDirection: "row", gap: 1, backgroundColor: "transparent", justifyContent: "center", alignItems: "center" }}>
+    <View className="flex-2 bg-transparent gap-2">
+      <View className="flex-2 flex-row gap-[1px] bg-transparent justify-center items-center">
         <TouchableOpacity
           onPress={() => {
             setPlaying(!isPlaying);
           }}
         >
-          {/* Assuming you have appropriate icons for play and pause */}
           <Ionicons name={isPlaying ? "pause" : "play"} size={32} />
         </TouchableOpacity>
         {Array.from({ length: 20 }, (_, index) => {
           const randomNumber = Math.floor(Math.random() * 10) * 2;
-
           return (
             <View
-              style={{ width: 1, backgroundColor: "green", borderRadius: 5, height: randomNumber }}
+              className="w-1 bg-green-500 rounded-full"
               key={index}
+              height={randomNumber}
             />
           );
         })}
       </View>
     </View>
   );
-};
-
-// Interface for the MessageBlobProps
-interface MessageBlobProps extends MessageBlobType {
-  inAudioMode: boolean;
-  setInAudioMode: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-// MessageBlob component
-const MessageBlob: React.FC<MessageBlobProps> = ({ type, text, audio, inAudioMode, setInAudioMode }) => {
+export function MessageBlob(props: MessageBlobType) {
+  const { type, text, audio } = props;
+
+  const [inAudioMode, setInAudioMode] = useState(true);
+
   const baseStyle = "py-3 px-4 rounded-2xl mb-2 gap-1";
   let variantStyle = " ";
   if (type == "human") {
@@ -73,54 +79,118 @@ const MessageBlob: React.FC<MessageBlobProps> = ({ type, text, audio, inAudioMod
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: "transparent", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-      <Text style={{ color: type === "ai" ? "darkgreen" : "darkslategray", flex: 1 }}>
-        {type === "ai" ? "Ella" : "Satyam"}
-      </Text>
-      {audio != null ? (
+    <View className={`${baseStyle} ${variantStyle}`}>
+      <View className="flex-row flex-1 bg-transparent items-center">
+        <Text className="text-slate-700 dark:text-green-200 flex-grow">
+          {type === "ai" ? "Ella" : "Satyam"}
+        </Text>
+        { audio != null ? (
         <TouchableOpacity onPress={() => setInAudioMode(!inAudioMode)}>
-          {/* Assuming you have appropriate icons for play and chat bubble */}
-          <Ionicons name={inAudioMode ? "play-outline" : "chatbubble-outline"} style={{ flex: 1, padding: 8 }} />
+          <Ionicons name={ inAudioMode ? "play-outline" : "chatbubble-outline"  } className="flex-1 p-2" />
         </TouchableOpacity>
-      ) : null}
+        ) : null}
+      </View>
       {audio != null ? (
-        inAudioMode ? <AudioPlayer url={audio} state="paused" /> : <Text style={{ color: type === "ai" ? "darkgreen" : "darkslategray" }}>{text}</Text>
+        inAudioMode ?
+        <AudioPlayer url={audio} state="paused" /> : <Text className="text-slate-900 dark:text-slate-100">{text}</Text>
       ) : (
-        <Text style={{ color: type === "ai" ? "darkgreen" : "darkslategray" }}>{text}</Text>
+        <Text className="text-slate-900 dark:text-slate-100">{text}</Text>
       )}
     </View>
   );
-};
-
-// Interface for the ChatCardProps
-interface ChatCardProps {
-  messages: MessageBlobType[];
-  onClose: () => void;
 }
 
-// ChatCard component
-const ChatCard: React.FC<ChatCardProps> = ({ messages, onClose }) => {
-  const [inAudioMode, setInAudioMode] = useState(true);
+
+export function ChatCard(){
+    const [type, setType] = useState(CameraType.back);
+  const [permission, requestPermission] = Camera.useCameraPermissions();
+
+  const [sound, setSound] = useState();
+
+  const [msgs, setMsgs] = useState([
+    {
+    type: "human",
+    text: "Hi",
+    audio: "https://d7ftvotrexusa.cloudfront.net/chataudio/1340/G4mv3Y9.mpeg",
+  },
+  { type: "ai", text: "Hi Human!" },
+  {
+    type: "human",
+    text: "Hi",
+    audio: "https://d7ftvotrexusa.cloudfront.net/chataudio/1340/G4mv3Y9.mpeg",
+  },
+  { type: "ai", text: "Hi Human!" },
+  {
+    type: "human",
+    text: "Hi",
+    audio: "https://d7ftvotrexusa.cloudfront.net/chataudio/1340/G4mv3Y9.mpeg",
+  },
+  { type: "ai", text: "Hi Human!" },
+  { type: "human", text: "Nice to meet you" },
+  { type: "ai", text: "Hi Human!" },
+  {
+    type: "human",
+    text: "Hi",
+    audio: "https://d7ftvotrexusa.cloudfront.net/chataudio/1340/G4mv3Y9.mpeg",
+  },
+  { type: "ai", text: "Hi Human!" },
+  { type: "human", text: "Nice to meet you" },
+  { type: "ai", text: "Hi Human!" },
+  {
+    type: "human",
+    text: "Hi",
+    audio: "https://d7ftvotrexusa.cloudfront.net/chataudio/1340/G4mv3Y9.mpeg",
+  },
+  { type: "ai", text: "Hi Human!" },
+  { type: "human", text: "Nice to meet you" },
+  ]);
+
+  async function talk() {
+    setMsgs([...msgs, { type: 'ai', text: '...' }]);
+    try {
+      const chatCompletion = await openai.chat.completions.create({
+        messages: [{ role: 'user', content: 'Nice to Meet you' }],
+        model: 'gpt-3.5-turbo',
+      });
+
+      const response = {
+        type: 'ai',
+        text: chatCompletion.choices[0].message.content || '',
+      };
+
+      setMsgs([...msgs, response]);
+      return chatCompletion;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  function toggleCameraType() {
+    setType((current) =>
+      current === CameraType.back ? CameraType.front : CameraType.back,
+    );
+  }
+
+  const { height } = useWindowDimensions();
+  const screenHeight = height;
+  const safeScreenHeight = height - getStatusBarHeight(true);
+  const footerHeight = 160;
+  const canvasHeight = safeScreenHeight - footerHeight;
 
   return (
-    <View style={{ position: "absolute", height: "90%", width: "90%", margin: 16, backgroundColor: "darkgray", borderRadius: 20 }}>
-      <View style={{ height: 60, backgroundColor: "yellow", opacity: 0.8 }}>
-        <TouchableOpacity onPress={onClose} style={{ padding: 8 }}>
-          {/* You can use an icon for closing the chat card */}
-          {/* Example: <Ionicons name="close" size={24} color="white" /> */}
-        </TouchableOpacity>
+    <View
+      className="relative items-center justify-center bg-cyan-50 dark:bg-gray-900"
+      style={{ width: '100%', height: canvasHeight }}
+    >
+      <View className="absolute h-[90%] w-[90%] mx-2 my-6 dark:bg-gray-950 rounded-xl overflow-hidden">
+        <View className="h-12 bg-yellow-800 dark:bg-amber-950/80"></View>
+        <FlashList
+          renderItem={({ item }) => <MessageBlob {...item} />}
+          estimatedItemSize={50}
+          data={msgs}
+          contentContainerStyle={{ padding: 15 }}
+        />
       </View>
-      <FlashList
-        renderItem={({ item }) => (
-          <MessageBlob {...item} inAudioMode={inAudioMode} setInAudioMode={setInAudioMode} />
-        )}
-        estimatedItemSize={50}
-        data={messages}
-        contentContainerStyle={{ padding: 15 }}
-      />
     </View>
   );
-};
-
-export { MessageBlob , MessageBlobType};
-export default ChatCard;
+}
