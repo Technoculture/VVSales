@@ -126,24 +126,24 @@ export default function HomeScreen() {
   const [sound, setSound] = useState();
 
 
-  async function talk() {
-    setMsgs([...msgs, { type: "ai", text: "..." }]);
-    try {
-      const chatCompletion = await openai.chat.completions.create({
-        messages: [{ role: "user", content: "Nice to Meet you" }],
-        model: "gpt-3.5-turbo",
-      });
-      console.log(chatCompletion);
-      const response: MessageBlobType = {
-        type: "ai",
-        text: chatCompletion.choices[0].message.content || "",
-      };
-      setMsgs([...msgs, response]);
-      return chatCompletion;
-    } catch (err) {
-      console.error(err);
-    }
-  }
+  // async function talk() {
+  //   setMsgs([...msgs, { type: "ai", text: "..." }]);
+  //   try {
+  //     const chatCompletion = await openai.chat.completions.create({
+  //       messages: [{ role: "user", content: "Nice to Meet you" }],
+  //       model: "gpt-3.5-turbo",
+  //     });
+  //     console.log(chatCompletion);
+  //     const response: MessageBlobType = {
+  //       type: "ai",
+  //       text: chatCompletion.choices[0].message.content || "",
+  //     };
+  //     setMsgs([...msgs, response]);
+  //     return chatCompletion;
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // }
 
   function toggleCameraType() {
     setType((current) =>
