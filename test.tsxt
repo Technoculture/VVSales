@@ -1,2 +1,0 @@
-I am creating an application in reactnative using tsx and expo, it has footer which has 3 butons, gallery, call, camera and it has components accordingly but i want when call button is clicked it should call ChatCard.tsx and render it with transition flow of bottom to up and when user again clicks on it , it should glide back to bottom of page with only showing 10%(make it adjustable so i can see what suits me) above footer , did you understand what i want to achieve? if yes explain me and i am providing the code tell me the changes:
-Footer.tsx:
