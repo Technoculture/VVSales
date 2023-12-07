@@ -47,7 +47,8 @@
         "origin": false
       },
       "eas": {
-        "projectId": "dfde4001-b00b-4a77-a028-7d966b8f9e3d"
+        
+        "projectId" :"dfde4001-b00b-4a77-a028-7d966b8f9e3d"
       }
     },
     "owner": "technoculture"

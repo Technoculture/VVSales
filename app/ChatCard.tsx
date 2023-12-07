@@ -170,7 +170,7 @@ export function ChatCard(){
       current === CameraType.back ? CameraType.front : CameraType.back,
     );
   }
-
+  
   const { height } = useWindowDimensions();
   const screenHeight = height;
   const safeScreenHeight = height - getStatusBarHeight(true);
