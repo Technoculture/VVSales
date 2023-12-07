@@ -1,5 +1,11 @@
 name: update
-on: push
+on:
+  push:
+  pull_request:
+    types:
+      - synchronize
+      - opened
+      - reopened
 
 jobs:
   update:
@@ -33,3 +39,37 @@ jobs:
 
       - name: Publish update
         run: eas update --auto
+
+      - name: Expo Preview Action
+        uses: expo/expo-preview-action@v1.2.2
+        with:
+          expo-token: ${{ secrets.EXPO_TOKEN }}
+
+name: Lint, TypeScript Check, and Format
+
+on: [push]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout commit
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: yarn install
+
+      - name: Lint and fix
+        run: yarn lint:fix
+
+      - name: Formatting Check
+        run: yarn format-check
+
+      - name: Type check
+        run: yarn type-check
+
