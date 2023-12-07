@@ -40,7 +40,4 @@ yarn-error.*
 expo-env.d.ts
 # @end expo-cli
 
-*.lock
 .env
-
-package-lock.json
