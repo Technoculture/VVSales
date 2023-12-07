@@ -11,10 +11,6 @@ import { ChatCard } from './ChatCard';
 import { Footer } from './Footer';
 import { ExternalLink } from "../components/ExternalLink";
 import { isAudioEnabled } from "expo-av/build/Audio/AudioAvailability";
-import { useNavigation } from '@react-navigation/native';
-import * as DocumentPicker from 'expo-document-picker';
-import * as Animatable from 'react-native-animatable';
-
 
 const openai = new OpenAI({
   apiKey: process.env["OPENAI_API_KEY"],

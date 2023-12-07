@@ -11,10 +11,8 @@ interface FooterProps {
 }
 
 export function Footer({ onCallPress, onCameraPress }: FooterProps): React.JSX.Element {
-  // Function to handle file picked from the gallery
   function handleFilePick(uri: string) {
     console.log('Picked file:', uri);
-    // You can perform further actions with the selected file URI
   }
 
   return (
