@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet } from 'react-native';
 import { Camera, CameraType } from "expo-camera";
+import { RoundedButton } from "../RoundedButton";
 
 interface CameraProps {
   onCameraPress: (cameraType: CameraType) => void;
@@ -21,18 +22,19 @@ export function CameraComponent({ onCameraPress }: CameraProps): React.JSX.Eleme
     return (
       <View style={styles.container}>
         <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-        {/* Add a button to request permission if needed */}
+        <RoundedButton icon="camera" type="secondary" onPress={handleCameraPress} />
       </View>
     );
   }
 
-  // Update onCameraPress to handle the camera opening logic
   async function handleCameraPress() {
     try {
       const { status } = await Camera.requestCameraPermissionsAsync();
       if (status === 'granted') {
         // Open the camera
         setCameraOpen(true);
+        onCameraPress(type);
+        console.log('Camera permission granted');
       } else {
         // Handle case where camera permissions are not granted
         console.log('Camera permission not granted');
@@ -48,10 +50,15 @@ export function CameraComponent({ onCameraPress }: CameraProps): React.JSX.Eleme
         <Camera
           style={{ flex: 1 }}
           type={type}
-          onCameraReady={() => console.log('Camera is ready')}
+          onCameraReady={() => {
+            console.log('Camera is ready');
+            onCameraPress(type);
+          }}
           onMountError={(error) => console.log('Camera mount error', error)}
         />
-      ) : null}
+      ) : (
+        <RoundedButton icon="camera" type="secondary" onPress={handleCameraPress} />
+      )}
     </View>
   );
 }

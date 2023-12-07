@@ -1,7 +1,9 @@
-import React, { useState } from "react";
-import { View, StyleSheet, Text, Button } from 'react-native';
-import { Camera, CameraType } from "expo-camera";
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
 import { RoundedButton } from './RoundedButton';
+import { CameraComponent } from './input/Camera';
+import { Gallery } from './input/Gallery';
+import { CameraType } from 'expo-camera';
 
 interface FooterProps {
   onCallPress: () => Promise<void>;
@@ -9,65 +11,22 @@ interface FooterProps {
 }
 
 export function Footer({ onCallPress, onCameraPress }: FooterProps): React.JSX.Element {
-  const [type, setType] = useState(CameraType.back);
-  const [permission, requestPermission] = Camera.useCameraPermissions();
-  const [isCameraOpen, setCameraOpen] = useState(false);
-
-  if (!permission) {
-    // Camera permissions are still loading
-    return <View />;
-  }
-
-  if (!permission.granted) {
-    // Camera permissions are not granted yet
-    return (
-      <View style={styles.container}>
-        <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="Grant Permission" />
-      </View>
-    );
-  }
-
-  // Update onCameraPress to handle the camera opening logic
-  async function handleCameraPress() {
-    try {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      if (status === 'granted') {
-        // Open the camera
-        setCameraOpen(true);
-      } else {
-        // Handle case where camera permissions are not granted
-        console.log('Camera permission not granted');
-      }
-    } catch (error) {
-      console.error('Error requesting camera permissions:', error);
-    }
+  // Function to handle file picked from the gallery
+  function handleFilePick(uri: string) {
+    console.log('Picked file:', uri);
+    // You can perform further actions with the selected file URI
   }
 
   return (
     <View style={styles.footerContainer}>
-      <RoundedButton icon="grid" type="secondary" style={{ marginRight: 2 }} />
-      <RoundedButton icon="call" type="primary" style={{ marginHorizontal: 2 }} trigger={onCallPress} />
-      {isCameraOpen ? (
-        <Camera
-          style={{ flex: 1 }}
-          type={type}
-          onCameraReady={() => console.log('Camera is ready')}
-          onMountError={(error) => console.log('Camera mount error', error)}
-        />
-      ) : (
-        <RoundedButton icon="camera" style={{ marginLeft: 2 }} trigger={() => onCameraPress(type)} />
-      )}
+      <Gallery onFilePick={handleFilePick} />
+      <RoundedButton icon="call" type="primary" onPress={onCallPress} />
+      <RoundedButton icon="camera" type="secondary" onPress={() => onCameraPress(CameraType.back)} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   footerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
