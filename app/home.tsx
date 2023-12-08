@@ -17,9 +17,7 @@ export default function HomeScreen() {
   const safeScreenHeight = height - getStatusBarHeight(true);
   const footerHeight = 160;
   const canvasHeight = safeScreenHeight - footerHeight;
-  console.log(
-    `${screenHeight}, ${safeScreenHeight}, ${footerHeight}, ${canvasHeight}`,
-  );
+
   return (
     <SafeAreaView
       className="flex-1 bg-cyan-50 dark:bg-gray-900"
