@@ -1,19 +1,11 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { FlashList } from "@shopify/flash-list";
-import { Audio } from "expo-av";
-import { isAudioEnabled } from "expo-av/build/Audio/AudioAvailability";
 import { Camera, CameraType } from "expo-camera";
-import { Link } from "expo-router";
 import OpenAI from "openai";
-import { useState, useEffect, useRef } from "react";
-import {
-  TouchableOpacity,
-  useWindowDimensions,
-  SafeAreaView,
-} from "react-native";
+import React, { useState } from "react";
+import { TouchableOpacity, useWindowDimensions } from "react-native";
 import { getStatusBarHeight } from "react-native-safearea-height";
 
-import { ExternalLink } from "../components/ExternalLink";
 import { Text, View } from "../components/Themed";
 
 const openai = new OpenAI({
@@ -21,7 +13,7 @@ const openai = new OpenAI({
 });
 
 interface ChatCardProps {
-  openai: any; // Replace with the correct type
+  openai: any;
 }
 
 interface MessageBlobType {
@@ -70,9 +62,9 @@ export function MessageBlob(props: MessageBlobType) {
 
   const baseStyle = "py-3 px-4 rounded-2xl mb-2 gap-1";
   let variantStyle = " ";
-  if (type == "human") {
+  if (type === "human") {
     variantStyle += "bg-green-300 dark:bg-green-700 ml-auto";
-  } else if (type == "ai") {
+  } else if (type === "ai") {
     variantStyle += "bg-slate-100 dark:bg-amber-800 mr-auto";
   }
 

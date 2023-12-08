@@ -1,36 +1,59 @@
+// Footer.tsx
 import { CameraType } from "expo-camera";
-import React from "react";
-import { View, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { View, StyleSheet, Modal, TouchableOpacity, Text } from "react-native";
 
+import { CameraComponent } from "./Camera";
 import { RoundedButton } from "./RoundedButton";
-import { CameraComponent } from "./input/Camera";
 import { Gallery } from "./input/Gallery";
 
 interface FooterProps {
   onCallPress: () => Promise<void>;
   onCameraPress: (cameraType: CameraType) => void;
+  onFilePick: (uri: string) => void;
 }
 
 export function Footer({
   onCallPress,
   onCameraPress,
+  onFilePick,
 }: FooterProps): React.JSX.Element {
-  function handleFilePick(uri: string) {
-    console.log("Picked file:", uri);
-  }
+  const [isCameraModalVisible, setCameraModalVisible] = useState(false);
+
+  const handleCameraPress = () => {
+    setCameraModalVisible(true);
+  };
+
+  const closeCameraModal = () => {
+    setCameraModalVisible(false);
+  };
 
   return (
     <View style={styles.footerContainer}>
-      <Gallery onFilePick={handleFilePick} />
+      <Gallery onFilePick={onFilePick} />
       <RoundedButton icon="call" type="primary" onPress={onCallPress} />
       <RoundedButton
         icon="camera"
         type="secondary"
-        onPress={() => onCameraPress(CameraType.back)}
+        trigger={handleCameraPress}
       />
+
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={isCameraModalVisible}
+      >
+        <CameraComponent onCameraPress={(type) => onCameraPress(type)} />
+        <TouchableOpacity onPress={closeCameraModal}>
+          <Text style={{ color: "white", fontSize: 18, textAlign: "center" }}>
+            Close Camera
+          </Text>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   footerContainer: {
