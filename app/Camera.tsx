@@ -1,6 +1,7 @@
+import { useNavigation } from "@react-navigation/native"; // Import useNavigation
 import { Camera as ExpoCamera, CameraType } from "expo-camera";
 import React, { useState, useEffect, useRef } from "react";
-import { TouchableOpacity, View, Text, Alert } from "react-native";
+import { TouchableOpacity, View, Text, Alert, Image } from "react-native";
 
 interface CameraComponentProps {
   onCameraPress: (cameraType: CameraType) => void;
@@ -9,6 +10,7 @@ interface CameraComponentProps {
 export function CameraComponent({
   onCameraPress,
 }: CameraComponentProps): React.ReactElement {
+  const navigation = useNavigation(); // Use useNavigation hook
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [type, setType] = useState(CameraType.back);
   const [, setCapturedPhoto] = useState<string | null>(null);
@@ -36,6 +38,14 @@ export function CameraComponent({
         Alert.alert(
           "Photo Captured",
           "The photo has been captured successfully!",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                navigation.navigate("home");
+              },
+            },
+          ],
         );
       } catch (error) {
         console.error("Error taking picture:", error);
@@ -60,16 +70,30 @@ export function CameraComponent({
 
   return (
     <View style={{ flex: 1 }}>
+      <TouchableOpacity
+        style={{
+          position: "absolute",
+          top: 16,
+          left: 16,
+          zIndex: 2,
+        }}
+        onPress={() => navigation.navigate("home")}
+      >
+        <Text style={{ color: "white", fontSize: 18 }}>{`< Back`}</Text>
+      </TouchableOpacity>
+
       <ExpoCamera
         ref={(ref) => (cameraRef.current = ref)}
         style={{ flex: 1 }}
         type={type}
       >
+        {/* Bottom buttons */}
         <View
           style={{
             flex: 1,
             flexDirection: "row",
-            justifyContent: "flex-end",
+            justifyContent: "space-between",
+            alignItems: "flex-end",
             padding: 16,
           }}
         >
@@ -79,15 +103,6 @@ export function CameraComponent({
           >
             <Text style={{ color: "white", fontSize: 18 }}>Flip Camera</Text>
           </TouchableOpacity>
-        </View>
-        <View
-          style={{
-            flex: 1,
-            flexDirection: "row",
-            justifyContent: "center",
-            marginBottom: 16,
-          }}
-        >
           <TouchableOpacity
             style={{ backgroundColor: "red", padding: 16, borderRadius: 9999 }}
             onPress={takePicture}

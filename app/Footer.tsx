@@ -54,7 +54,6 @@ export function Footer({
   );
 }
 
-
 const styles = StyleSheet.create({
   footerContainer: {
     flexDirection: "row",
