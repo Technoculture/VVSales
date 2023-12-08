@@ -1,8 +1,6 @@
 import OpenAI from "openai";
-import {
-  useWindowDimensions,
-  SafeAreaView,
-} from "react-native";
+import React from "react";
+import { useWindowDimensions, SafeAreaView } from "react-native";
 import { getStatusBarHeight } from "react-native-safearea-height";
 
 import { ChatCard } from "./ChatCard";

@@ -55,19 +55,23 @@ export function CameraComponent({
   }
 
   return (
-    <View style={tw('flex-1')}>
+    <View style={tw("flex-1")}>
       {isCameraOpen ? (
         <Camera
-          style={tw('flex-1')}
+          style={tw("flex-1")}
           type={type}
           onCameraReady={() => {
-            console.log('Camera is ready');
+            console.log("Camera is ready");
             onCameraPress(type);
           }}
-          onMountError={(error) => console.log('Camera mount error', error)}
+          onMountError={(error) => console.log("Camera mount error", error)}
         />
       ) : (
-        <RoundedButton icon="camera" type="secondary" onPress={handleCameraPress} />
+        <RoundedButton
+          icon="camera"
+          type="secondary"
+          onPress={handleCameraPress}
+        />
       )}
     </View>
   );
