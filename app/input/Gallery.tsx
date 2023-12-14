@@ -17,7 +17,6 @@ export function Gallery({ onFilePick }: GalleryProps): React.JSX.Element {
       });
 
       if (result.type === "success") {
-        console.log(result.uri);
         onFilePick(result.uri);
       }
     } catch (error) {
@@ -27,11 +26,7 @@ export function Gallery({ onFilePick }: GalleryProps): React.JSX.Element {
 
   return (
     <View style={styles.galleryContainer}>
-      <RoundedButton
-        icon="grid"
-        type="secondary"
-        onPress={openDocumentPicker}
-      />
+      <RoundedButton icon="grid" type="primary" onPress={openDocumentPicker} />
     </View>
   );
 }

@@ -1,7 +1,7 @@
-import { useNavigation } from "@react-navigation/native"; // Import useNavigation
 import { Camera as ExpoCamera, CameraType } from "expo-camera";
+import { Link } from "expo-router";
 import React, { useState, useEffect, useRef } from "react";
-import { TouchableOpacity, View, Text, Alert, Image } from "react-native";
+import { TouchableOpacity, View, Text, Alert } from "react-native";
 
 interface CameraComponentProps {
   onCameraPress: (cameraType: CameraType) => void;
@@ -10,7 +10,6 @@ interface CameraComponentProps {
 export function CameraComponent({
   onCameraPress,
 }: CameraComponentProps): React.ReactElement {
-  const navigation = useNavigation(); // Use useNavigation hook
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [type, setType] = useState(CameraType.back);
   const [, setCapturedPhoto] = useState<string | null>(null);
@@ -41,9 +40,7 @@ export function CameraComponent({
           [
             {
               text: "OK",
-              onPress: () => {
-                navigation.navigate("home");
-              },
+              // onPress={() => router.replace("/")},
             },
           ],
         );
@@ -70,17 +67,12 @@ export function CameraComponent({
 
   return (
     <View style={{ flex: 1 }}>
-      <TouchableOpacity
-        style={{
-          position: "absolute",
-          top: 16,
-          left: 16,
-          zIndex: 2,
-        }}
-        onPress={() => navigation.navigate("home")}
+      <Link
+        href="/index"
+        style={{ position: "absolute", top: 16, left: 16, zIndex: 2 }}
       >
         <Text style={{ color: "white", fontSize: 18 }}>{`< Back`}</Text>
-      </TouchableOpacity>
+      </Link>
 
       <ExpoCamera
         ref={(ref) => (cameraRef.current = ref)}

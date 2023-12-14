@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import OpenAI from "openai";
 import React from "react";
 import { useWindowDimensions, SafeAreaView } from "react-native";
-import { getStatusBarHeight } from "react-native-safearea-height";
 
 import { ChatCard } from "./ChatCard";
 import { Footer } from "./Footer";
@@ -14,9 +14,6 @@ const openai = new OpenAI({
 export default function HomeScreen() {
   const { height } = useWindowDimensions();
   const screenHeight = height;
-  const safeScreenHeight = height - getStatusBarHeight(true);
-  const footerHeight = 160;
-  const canvasHeight = safeScreenHeight - footerHeight;
 
   return (
     <SafeAreaView
@@ -24,11 +21,14 @@ export default function HomeScreen() {
       style={{ height: screenHeight }}
     >
       <View style={{ flex: 1 }}>
-        <ChatCard openai={openai} />
+        <ChatCard />
       </View>
       <Footer
         onCallPress={async () => await talk()}
         onCameraPress={() => console.log("Camera")}
+        onFilePick={function (uri: string): void {
+          throw new Error("Function not implemented.");
+        }}
       />
     </SafeAreaView>
   );

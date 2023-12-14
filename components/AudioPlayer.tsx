@@ -4,7 +4,7 @@ import { Audio } from "expo-av";
 import React, { useState } from "react";
 import { TouchableOpacity } from "react-native";
 
-import { View } from "../components/Themed";
+import { View } from "./Themed";
 
 interface AudioPlayerProps {
   url: string;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { FlashList } from "@shopify/flash-list";
 import { Camera, CameraType } from "expo-camera";
@@ -97,11 +98,6 @@ export function MessageBlob(props: MessageBlobType) {
 }
 
 export function ChatCard() {
-  const [type, setType] = useState(CameraType.back);
-  const [permission, requestPermission] = Camera.useCameraPermissions();
-
-  const [sound, setSound] = useState();
-
   const [msgs, setMsgs] = useState([
     {
       type: "human",
@@ -158,12 +154,6 @@ export function ChatCard() {
     } catch (err) {
       console.error(err);
     }
-  }
-
-  function toggleCameraType() {
-    setType((current) =>
-      current === CameraType.back ? CameraType.front : CameraType.back,
-    );
   }
 
   const { height } = useWindowDimensions();

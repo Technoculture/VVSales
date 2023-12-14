@@ -31,7 +31,7 @@ export function Footer({
   return (
     <View style={styles.footerContainer}>
       <Gallery onFilePick={onFilePick} />
-      <RoundedButton icon="call" type="primary" onPress={onCallPress} />
+      <RoundedButton icon="call" type="primary" trigger={onCallPress} />
       <RoundedButton
         icon="camera"
         type="secondary"
