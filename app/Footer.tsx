@@ -1,7 +1,7 @@
 // Footer.tsx
 import { CameraType } from "expo-camera";
 import React, { useState } from "react";
-import { View, StyleSheet, Modal, TouchableOpacity, Text } from "react-native";
+import { View, Modal, TouchableOpacity, Text } from "react-native";
 
 import { CameraComponent } from "./Camera";
 import { RoundedButton } from "./RoundedButton";
@@ -29,14 +29,10 @@ export function Footer({
   };
 
   return (
-    <View style={styles.footerContainer}>
+    <View className="flex flex-row items-center justify-center bg-green-500 px-2 absolute bottom-0 w-full h-44">
       <Gallery onFilePick={onFilePick} />
       <RoundedButton icon="call" type="primary" trigger={onCallPress} />
-      <RoundedButton
-        icon="camera"
-        type="secondary"
-        trigger={handleCameraPress}
-      />
+      <RoundedButton icon="camera" type="primary" trigger={handleCameraPress} />
 
       <Modal
         animationType="slide"
@@ -53,17 +49,3 @@ export function Footer({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  footerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "green",
-    padding: 2,
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
-    height: 160,
-  },
-});

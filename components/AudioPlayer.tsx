@@ -1,6 +1,4 @@
-// audioPlayer.tsx
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Audio } from "expo-av";
 import React, { useState } from "react";
 import { TouchableOpacity } from "react-native";
 
@@ -8,35 +6,35 @@ import { View } from "./Themed";
 
 interface AudioPlayerProps {
   url: string;
+  state: "playing" | "stopped";
 }
 
-export function AudioPlayer({ url }: AudioPlayerProps): React.JSX.Element {
-  const [sound, setSound] = useState<Audio.Sound | undefined>(undefined);
-
-  async function handlePlayPause() {
-    if (!sound) {
-      const { sound } = await Audio.Sound.createAsync(
-        { uri: url },
-        { shouldPlay: true },
-      );
-      setSound(sound);
-    } else {
-      const status = await sound.getStatusAsync();
-      if (status.isPlaying) {
-        sound.pauseAsync();
-      } else {
-        sound.playAsync();
-      }
-    }
-  }
+export function AudioPlayer({ url, state }: AudioPlayerProps) {
+  const [isPlaying, setPlaying] = useState(state === "playing");
 
   return (
     <View className="flex-2 bg-transparent gap-2">
       <View className="flex-2 flex-row gap-[1px] bg-transparent justify-center items-center">
-        <TouchableOpacity onPress={handlePlayPause}>
-          <Ionicons name="play" size={32} />
+        <TouchableOpacity
+          onPress={() => {
+            setPlaying(!isPlaying);
+          }}
+        >
+          <Ionicons name={isPlaying ? "pause" : "play"} size={32} />
         </TouchableOpacity>
-        {/* Other UI elements */}
+        {Array.from({ length: 20 }, (_, index) => {
+          const randomNumber = Math.floor(Math.random() * 10) * 2;
+          const styles = {
+            height: randomNumber,
+          };
+          return (
+            <View
+              className="w-1 bg-green-500 rounded-full"
+              key={index}
+              style={styles}
+            />
+          );
+        })}
       </View>
     </View>
   );

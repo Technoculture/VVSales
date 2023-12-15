@@ -41,7 +41,7 @@ export function RoundedButton({
 }: RoundedButtonProps): React.JSX.Element {
   return (
     <TouchableOpacity
-      className={`bg-green-600 dark:bg-green-950 h-20 w-20 rounded-full items-center justify-center ${className}`}
+      className={`bg-gray-800 dark:bg-green-950 h-20 w-20 rounded-full items-center justify-center ${className}`}
       onPress={onPress || trigger}
     >
       <Ionicons

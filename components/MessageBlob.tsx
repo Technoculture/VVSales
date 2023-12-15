@@ -41,7 +41,7 @@ export function MessageBlob(props: MessageBlobProps): React.ReactElement {
       </View>
       {audio != null ? (
         inAudioMode ? (
-          <AudioPlayer url={audio} state="paused" />
+          <AudioPlayer url={audio} state="stopped" />
         ) : (
           <Text className="text-slate-900 dark:text-slate-100">{text}</Text>
         )

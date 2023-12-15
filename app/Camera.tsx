@@ -1,8 +1,9 @@
 import { Camera as ExpoCamera, CameraType } from "expo-camera";
+import * as MediaLibrary from "expo-media-library";
 import { Link } from "expo-router";
 import React, { useState, useEffect, useRef } from "react";
-import { TouchableOpacity, View, Text, Alert } from "react-native";
-
+import { TouchableOpacity, View, Text, Alert, PixelRatio } from "react-native";
+import { captureRef } from "react-native-view-shot";
 interface CameraComponentProps {
   onCameraPress: (cameraType: CameraType) => void;
 }
@@ -32,8 +33,19 @@ export function CameraComponent({
   const takePicture = async () => {
     if (cameraRef.current) {
       try {
-        const photo = await cameraRef.current.takePictureAsync();
-        setCapturedPhoto(photo.uri);
+        const targetPixelCount = 1080;
+        const pixelRatio = PixelRatio.get();
+        const pixels = targetPixelCount / pixelRatio;
+
+        const result = await captureRef(this.imageContainer, {
+          result: "tmpfile",
+          height: pixels,
+          width: pixels,
+          quality: 1,
+          format: "png",
+        });
+
+        await MediaLibrary.saveToLibraryAsync(result.uri);
         Alert.alert(
           "Photo Captured",
           "The photo has been captured successfully!",
