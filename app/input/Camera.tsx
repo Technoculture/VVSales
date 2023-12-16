@@ -79,7 +79,7 @@ export function CameraComponent({
   return (
     <View style={{ flex: 1 }}>
       <Link
-        href="/"
+        href="../index.tsx"
         style={{ position: "absolute", top: 16, left: 16, zIndex: 2 }}
       >
         <Text style={{ color: "white", fontSize: 18 }}>{`< Back`}</Text>
