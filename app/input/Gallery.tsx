@@ -25,7 +25,7 @@ export function Gallery({ onFilePick }: GalleryProps): React.JSX.Element {
 
   return (
     <View className="flex-row items-center justify-center">
-      <RoundedButton icon="grid" type="primary" trigger={openDocumentPicker} />
+      <RoundedButton icon="grid" type="primary" onPress={openDocumentPicker} />
     </View>
   );
 }

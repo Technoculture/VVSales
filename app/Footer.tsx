@@ -36,7 +36,7 @@ export function Footer({
         type="primary"
         onPress={async () => await onCallPress()}
       />
-      <RoundedButton icon="camera" type="primary" trigger={handleCameraPress} />
+      <RoundedButton icon="camera" type="primary" onPress={handleCameraPress} />
 
       <Modal
         animationType="slide"

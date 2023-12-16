@@ -26,7 +26,6 @@ type IoniconsNames =
   | /* Add other valid names */ undefined;
 
 interface RoundedButtonProps {
-  trigger?: () => void;
   icon: IoniconsNames;
   className?: string;
   type: string;
@@ -34,7 +33,6 @@ interface RoundedButtonProps {
 }
 
 export function RoundedButton({
-  trigger,
   icon,
   className,
   type,
@@ -43,7 +41,7 @@ export function RoundedButton({
   return (
     <TouchableOpacity
       className={`bg-gray-800 dark:bg-green-950 h-20 w-20 rounded-full items-center justify-center ${className}`}
-      onPress={onPress || trigger}
+      onPress={onPress}
     >
       <Ionicons
         name={icon}
