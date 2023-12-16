@@ -3,9 +3,9 @@ import { CameraType } from "expo-camera";
 import React, { useState } from "react";
 import { View, Modal, TouchableOpacity, Text } from "react-native";
 
-import { CameraComponent } from "./Camera";
-import { RoundedButton } from "./RoundedButton";
+import { CameraComponent } from "./input/Camera";
 import { Gallery } from "./input/Gallery";
+import { RoundedButton } from "../components/RoundedButton";
 
 interface FooterProps {
   onCallPress: () => Promise<void>;
@@ -31,7 +31,11 @@ export function Footer({
   return (
     <View className="flex flex-row items-center justify-center bg-green-500 px-2 absolute bottom-0 w-full h-44">
       <Gallery onFilePick={onFilePick} />
-      <RoundedButton icon="call" type="primary" trigger={onCallPress} />
+      <RoundedButton
+        icon="call"
+        type="primary"
+        onPress={async () => await onCallPress()}
+      />
       <RoundedButton icon="camera" type="primary" trigger={handleCameraPress} />
 
       <Modal

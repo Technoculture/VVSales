@@ -6,7 +6,7 @@ import { AudioPlayer } from "./AudioPlayer";
 import { Text, View } from "../components/Themed";
 
 interface MessageBlobProps {
-  type: "human" | "ai";
+  type: string;
   text?: string;
   audio?: string;
 }

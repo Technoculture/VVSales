@@ -22,10 +22,11 @@ type IoniconsNames =
   | "push"
   | "call"
   | "camera"
+  | "grid"
   | /* Add other valid names */ undefined;
 
 interface RoundedButtonProps {
-  trigger: () => void;
+  trigger?: () => void;
   icon: IoniconsNames;
   className?: string;
   type: string;

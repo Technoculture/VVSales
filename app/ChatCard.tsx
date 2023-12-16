@@ -5,9 +5,9 @@ import React, { useState } from "react";
 import { TouchableOpacity, useWindowDimensions } from "react-native";
 import { getStatusBarHeight } from "react-native-safearea-height";
 
-import { AudioPlayer } from "../components/AudioPlayer";
+import { talk } from "./input/talk";
 import { MessageBlob } from "../components/MessageBlob";
-import { Text, View } from "../components/Themed";
+import { View } from "../components/Themed";
 
 const openai = new OpenAI({
   apiKey: process.env["OPENAI_API_KEY"],
@@ -52,24 +52,8 @@ export function ChatCard() {
     { type: "human", text: "Nice to meet you" },
   ]);
 
-  async function talk() {
-    setMsgs([...msgs, { type: "ai", text: "..." }]);
-    try {
-      const chatCompletion = await openai.chat.completions.create({
-        messages: [{ role: "user", content: "Nice to Meet you" }],
-        model: "gpt-3.5-turbo",
-      });
-
-      const response = {
-        type: "ai",
-        text: chatCompletion.choices[0].message.content || "",
-      };
-
-      setMsgs([...msgs, response]);
-      return chatCompletion;
-    } catch (err) {
-      console.error(err);
-    }
+  async function handleTalk() {
+    await talk(setMsgs, msgs);
   }
 
   const { height } = useWindowDimensions();

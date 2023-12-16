@@ -13,7 +13,6 @@ export function CameraComponent({
 }: CameraComponentProps): React.ReactElement {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [type, setType] = useState(CameraType.back);
-  const [, setCapturedPhoto] = useState<string | null>(null);
   const cameraRef = useRef<ExpoCamera | null>(null);
 
   useEffect(() => {
@@ -37,7 +36,7 @@ export function CameraComponent({
         const pixelRatio = PixelRatio.get();
         const pixels = targetPixelCount / pixelRatio;
 
-        const result = await captureRef(this.imageContainer, {
+        const result = await captureRef(cameraRef.current, {
           result: "tmpfile",
           height: pixels,
           width: pixels,
@@ -80,7 +79,7 @@ export function CameraComponent({
   return (
     <View style={{ flex: 1 }}>
       <Link
-        href="/index"
+        href="/"
         style={{ position: "absolute", top: 16, left: 16, zIndex: 2 }}
       >
         <Text style={{ color: "white", fontSize: 18 }}>{`< Back`}</Text>

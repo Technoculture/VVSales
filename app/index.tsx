@@ -1,19 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import OpenAI from "openai";
-import React from "react";
+import React, { useState } from "react";
 import { useWindowDimensions, SafeAreaView } from "react-native";
 
 import { ChatCard } from "./ChatCard";
 import { Footer } from "./Footer";
+import { talk } from "./input/talk";
 import { View } from "../components/Themed";
-
-const openai = new OpenAI({
-  apiKey: process.env["OPENAI_API_KEY"],
-});
 
 export default function HomeScreen() {
   const { height } = useWindowDimensions();
   const screenHeight = height;
+  const [msgs, setMsgs] = useState<any[]>([]);
 
   return (
     <SafeAreaView
@@ -24,7 +22,7 @@ export default function HomeScreen() {
         <ChatCard />
       </View>
       <Footer
-        onCallPress={async () => await talk()}
+        onCallPress={async () => await talk(setMsgs, msgs)}
         onCameraPress={() => console.log("Camera")}
         onFilePick={function (uri: string): void {
           throw new Error("Function not implemented.");

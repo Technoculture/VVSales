@@ -1,15 +1,14 @@
 import * as DocumentPicker from "expo-document-picker";
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View } from "react-native";
 
-import { RoundedButton } from "../RoundedButton";
+import { RoundedButton } from "../../components/RoundedButton";
 
 interface GalleryProps {
   onFilePick: (uri: string) => void;
 }
 
 export function Gallery({ onFilePick }: GalleryProps): React.JSX.Element {
-  // Function to open document picker
   async function openDocumentPicker() {
     try {
       const result = await DocumentPicker.getDocumentAsync({
@@ -25,16 +24,8 @@ export function Gallery({ onFilePick }: GalleryProps): React.JSX.Element {
   }
 
   return (
-    <View style={styles.galleryContainer}>
-      <RoundedButton icon="grid" type="primary" onPress={openDocumentPicker} />
+    <View className="flex-row items-center justify-center">
+      <RoundedButton icon="grid" type="primary" trigger={openDocumentPicker} />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  galleryContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
