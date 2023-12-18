@@ -39,7 +39,7 @@ yarn-error.*
 
 expo-env.d.ts
 # @end expo-cli
-j
 .env
 
-unusedimports.txt
+# Ignore yarn lock file
+yarn.lock

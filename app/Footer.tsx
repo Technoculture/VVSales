@@ -45,9 +45,7 @@ export function Footer({
       >
         <CameraComponent onCameraPress={(type) => onCameraPress(type)} />
         <TouchableOpacity onPress={closeCameraModal}>
-          <Text style={{ color: "white", fontSize: 18, textAlign: "center" }}>
-            Close Camera
-          </Text>
+          <Text className="text-white text-18 text-center">Close Camera</Text>
         </TouchableOpacity>
       </Modal>
     </View>
