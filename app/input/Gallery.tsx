@@ -12,7 +12,7 @@ export function Gallery({ onFilePick }: GalleryProps): React.JSX.Element {
   async function openDocumentPicker() {
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: "*/*",
+        type: "application/pdf,text/plain,image/*,audio/*,video/*,.doc,.docx",
       });
 
       if (result.type === "success") {

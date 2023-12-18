@@ -18,7 +18,7 @@ export default function HomeScreen() {
       className="flex-1 bg-cyan-50 dark:bg-gray-900"
       style={{ height: screenHeight }}
     >
-      <View style={{ flex: 1 }}>
+      <View className="flex-1">
         <ChatCard />
       </View>
       <Footer
