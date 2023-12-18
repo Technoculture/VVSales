@@ -6,7 +6,7 @@ import { CameraComponent } from "./Camera";
 
 export default function CameraScreen() {
   return (
-    <View style={{ flex: 1 }}>
+    <View className="flex-1">
       <CameraComponent onCameraPress={() => {}} />
     </View>
   );

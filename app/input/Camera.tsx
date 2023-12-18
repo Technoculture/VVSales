@@ -68,49 +68,36 @@ export function CameraComponent({
 
   if (hasPermission === false) {
     return (
-      <View style={{ flex: 1, justifyContent: "center" }}>
-        <Text style={{ textAlign: "center" }}>
-          Camera permission is not granted
-        </Text>
+      <View className="flex-1 justify-center">
+        <Text className="text-center">Camera permission is not granted</Text>
       </View>
     );
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      <Link
-        href="../index.tsx"
-        style={{ position: "absolute", top: 16, left: 16, zIndex: 2 }}
-      >
-        <Text style={{ color: "white", fontSize: 18 }}>{`< Back`}</Text>
+    <View className="flex-1">
+      <Link href="../index.tsx" className="absolute top-16 left-16 z-2">
+        <Text className="text-white text-base">{`< Back`}</Text>
       </Link>
 
       <ExpoCamera
         ref={(ref) => (cameraRef.current = ref)}
-        style={{ flex: 1 }}
+        className="flex-1"
         type={type}
       >
         {/* Bottom buttons */}
-        <View
-          style={{
-            flex: 1,
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "flex-end",
-            padding: 16,
-          }}
-        >
+        <View className="flex flex-row justify-between items-end p-4">
           <TouchableOpacity
-            style={{ backgroundColor: "blue", padding: 16, borderRadius: 9999 }}
+            className="bg-blue-500 p-4 rounded-full"
             onPress={handleCameraPress}
           >
-            <Text style={{ color: "white", fontSize: 18 }}>Flip Camera</Text>
+            <Text className="text-white text-base">Flip Camera</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={{ backgroundColor: "red", padding: 16, borderRadius: 9999 }}
+            className="bg-red-500 p-4 rounded-full"
             onPress={takePicture}
           >
-            <Text style={{ color: "white", fontSize: 18 }}>Take Picture</Text>
+            <Text className="text-white text-18">Take Picture</Text>
           </TouchableOpacity>
         </View>
       </ExpoCamera>
