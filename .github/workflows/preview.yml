@@ -32,4 +32,3 @@ jobs:
           # Use your own, or keep the automatically infered branch name from `--auto`, when using different triggers.
           command: eas update --auto --branch ${{ github.event.pull_request.head.ref }}          
 
-          token: ${{ secrets.TCR_EXPO_GITHUB_TOKEN }}
