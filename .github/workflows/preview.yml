@@ -1,7 +1,11 @@
-on: [pull_request]
+on:
+  pull_request:
+    types: [opened, synchronize]
 jobs:
   preview:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write # Allow comments on PRs
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v3
@@ -16,7 +20,7 @@ jobs:
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
+          token: ${{ secrets.TCR_EXPO_GITHUB_TOKEN }}
 
       - name: 📦 Install dependencies
         run: yarn install
@@ -26,4 +30,5 @@ jobs:
         with:
           # `github.event.pull_request.head.ref` is only available on `pull_request` triggers.
           # Use your own, or keep the automatically infered branch name from `--auto`, when using different triggers.
-          command: eas update --auto --branch ${{ github.event.pull_request.head.ref }}
+          command: eas update --auto --branch ${{ github.event.pull_request.head.ref }}          
+

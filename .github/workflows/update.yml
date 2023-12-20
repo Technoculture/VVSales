@@ -1,0 +1,43 @@
+name: update
+on:
+  push: 
+    branches:
+      - release
+
+jobs:
+  update:
+    name: EAS Update
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for TCR_EXPO_GITHUB_TOKEN
+        run: |
+          if [ -z "${{ secrets.TCR_EXPO_GITHUB_TOKEN }}" ]; then
+            echo "You must provide an TCR_EXPO_GITHUB_TOKEN secret linked to this project's Expo account in this repo's secrets. Learn more: https://docs.expo.dev/eas-update/github-actions"
+            exit 1
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: yarn
+
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.TCR_EXPO_GITHUB_TOKEN }}
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Publish update
+        run: eas update --auto
+
+      - name: Expo Preview Action
+        uses: expo/expo-preview-action@v1.2.2
+        with:
+          expo-token: ${{ secrets.TCR_EXPO_GITHUB_TOKEN }}

@@ -13,7 +13,8 @@ export function ExternalLink(
         target: "_blank",
       }}
       {...props}
-      // @ts-expect-error: External URLs are not typed.
+      //this change is made to avoid the error of href not being a string in the Link component in github preview
+      // @ts-ignore
       href={props.href}
       onPress={(e) => {
         if (Platform.OS !== "web") {
