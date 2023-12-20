@@ -41,5 +41,3 @@ expo-env.d.ts
 # @end expo-cli
 .env
 
-# Ignore yarn lock file
-yarn.lock

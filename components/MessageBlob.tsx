@@ -9,6 +9,7 @@ import { Text } from "../components/Themed";
 interface MessageBlobProps extends VariantProps<typeof messageBlob> {
   text?: string;
   audio?: string;
+  className?: string;
 }
 
 const baseStyle = "py-3 px-4 rounded-2xl mb-2 gap-1";
