@@ -1,43 +1,48 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { cva, type VariantProps } from "class-variance-authority";
 import React, { useState } from "react";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 
 import { AudioPlayer } from "./AudioPlayer";
-import { Text, View } from "../components/Themed";
+import { Text } from "../components/Themed";
 
-interface MessageBlobProps {
-  type: string;
+interface MessageBlobProps extends VariantProps<typeof messageBlob> {
   text?: string;
   audio?: string;
 }
 
+const baseStyle = "py-3 px-4 rounded-2xl mb-2 gap-1";
+
+const messageBlob = cva(baseStyle, {
+  variants: {
+    type: {
+      human: "bg-green-300 dark:bg-green-700 ml-auto",
+      ai: "bg-slate-100 dark:bg-amber-800 mr-auto",
+    },
+  },
+  defaultVariants: {
+    type: "human",
+  },
+});
+
 export function MessageBlob(props: MessageBlobProps): React.ReactElement {
-  const { type, text, audio } = props;
+  const { type, text, audio, className } = props;
   const [inAudioMode, setInAudioMode] = useState(true);
 
-  const baseStyle = "py-3 px-4 rounded-2xl mb-2 gap-1";
-  let variantStyle = " ";
-
-  if (type === "human") {
-    variantStyle += "bg-green-300 dark:bg-green-700 ml-auto";
-  } else if (type === "ai") {
-    variantStyle += "bg-slate-100 dark:bg-amber-800 mr-auto";
-  }
-
   return (
-    <View className={`${baseStyle} ${variantStyle}`}>
+    <View className={messageBlob({ type, className })}>
       <View className="flex-row flex-1 bg-transparent items-center">
         <Text className="text-slate-700 dark:text-green-200 flex-grow">
           {type === "ai" ? "Ella" : "Satyam"}
         </Text>
-        {audio != null ? (
+        {audio != null && (
           <TouchableOpacity onPress={() => setInAudioMode(!inAudioMode)}>
             <Ionicons
               name={inAudioMode ? "play-outline" : "chatbubble-outline"}
               className="flex-1 p-2"
             />
           </TouchableOpacity>
-        ) : null}
+        )}
       </View>
       {audio != null ? (
         inAudioMode ? (
