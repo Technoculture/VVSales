@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { OPENAI_API_KEY } from "@env";
 import { FlashList } from "@shopify/flash-list";
 import OpenAI from "openai";
 import React, { useState } from "react";
@@ -10,7 +11,7 @@ import { MessageBlob } from "../components/MessageBlob";
 import { View } from "../components/Themed";
 
 const openai = new OpenAI({
-  apiKey: process.env["OPENAI_API_KEY"],
+  apiKey: OPENAI_API_KEY,
 });
 
 export function ChatCard() {
