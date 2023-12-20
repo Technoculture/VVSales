@@ -65,7 +65,9 @@ export function ChatCard() {
       <View className="absolute h-[90%] w-[90%] mx-2 my-6 dark:bg-gray-950 rounded-xl overflow-hidden">
         <View className="h-12 bg-blue-600 dark:bg-amber-950/80" />
         <FlashList
-          renderItem={({ item }) => <MessageBlob {...item} />}
+          renderItem={({ item }) => (
+            <MessageBlob {...item} type={item.type as "ai" | "human"} />
+          )}
           estimatedItemSize={50}
           data={msgs}
           contentContainerStyle={{ padding: 15 }}
