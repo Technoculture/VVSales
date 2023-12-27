@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "ella",
-    "slug": "DrElla",
+    "name": "vvsales",
+    "slug": "vvsales",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -12,17 +12,23 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.technoculture.ella"
+      "bundleIdentifier": "com.technoculture.vvsales"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.technoculture.ella"
+      "package": "com.technoculture.vvsales",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -53,7 +59,7 @@
         "origin": false
       },
       "eas": {
-        "projectId" :"dfde4001-b00b-4a77-a028-7d966b8f9e3d"
+        "projectId": "a463d91b-3ec0-4653-837a-93a87a5b687d"
       }
     },
     "owner": "technoculture"

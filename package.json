@@ -1,5 +1,5 @@
 {
-  "name": "ella",
+  "name": "vvsales",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
@@ -7,7 +7,6 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "test": "jest --watchAll",
     "format": "prettier . --write",
     "format-check": "prettier --check \"**/*.{ts,tsx}\"",
     "type-check": "tsc --pretty --noEmit",
@@ -31,6 +30,7 @@
     "clsx": "^2.0.0",
     "cn": "^0.1.1",
     "cva": "^0.0.0",
+    "eas-cli": "^5.9.3",
     "expo": "^49.0.21",
     "expo-av": "~13.4.1",
     "expo-camera": "~13.4.4",
@@ -67,7 +67,8 @@
     "tailwind-merge": "^2.1.0",
     "tailwind-rn": "^4.2.0",
     "vectordb": "^0.3.7",
-    "wavesurfer.js": "^7.4.6"
+    "wavesurfer.js": "^7.4.6",
+    "wrap-ansi": "^9.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

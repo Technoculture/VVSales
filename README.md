@@ -1,4 +1,4 @@
-# Ella
+# vvsales
 
 # TODOs
 
@@ -25,5 +25,5 @@ yarn run ios --clear
 # Troubleshooting
 
 ```txt
-watchman watch-del 'project location/Ella' ; watchman watch-project 'project location/Ella'
+watchman watch-del 'project location/vvsales' ; watchman watch-project 'project location/vvsales'
 ```
