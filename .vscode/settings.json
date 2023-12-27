@@ -2,8 +2,5 @@
   "editor.formatOnSaveMode": "modifications",
   "editor.formatOnSave": true,
   "editor.formatOnPaste": true,
-  "cSpell.words": [
-    "chatbubble",
-    "Ionicons"
-  ]
+  "cSpell.words": ["chatbubble", "Ionicons"]
 }
