@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { API_URL } from "@env";
 import React, { useState, useEffect } from "react";
 import { FlatList, TouchableOpacity, Linking, Platform } from "react-native";
 import RNImmediatePhoneCall from "react-native-immediate-phone-call";
@@ -17,7 +18,7 @@ export default function TabOneScreen() {
   const [tasks, setTasks] = useState<Task[]>([]);
 
   const fetchTasks = () => {
-    fetch("https://d6a2-103-136-175-206.ngrok-free.app/tasks")
+    fetch(API_URL)
       .then((response) => response.json())
       .then((data) => {
         console.log("Fetched data:", data);

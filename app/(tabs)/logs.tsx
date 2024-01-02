@@ -30,7 +30,7 @@ export default function TabTwoScreen() {
         );
 
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          CallLogs.load(5).then((logs) => {
+          CallLogs.load(50).then((logs) => {
             console.log("Call logs:", logs);
 
             const formattedLogs: CallLogItem[] = logs.map((log) => {
