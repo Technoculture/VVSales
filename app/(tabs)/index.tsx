@@ -1,15 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import { FlatList, TouchableOpacity, Linking, Platform } from "react-native";
+import RNImmediatePhoneCall from "react-native-immediate-phone-call";
 import call from "react-native-phone-call";
 
 import { Text, View } from "../../components/Themed";
-
-// Use different libraries based on the environment
-// const callLib =
-//   Platform.OS === "expo"
-//     ? require("react-native-phone-call")
-//     : require("react-native-immediate-phone-call");
 
 interface Task {
   id: string;
@@ -38,23 +33,40 @@ export default function TabOneScreen() {
   ]);
 
   // Function to handle call button press
-  // const handleCallPress = (contactNumber: string) => {
-  //   const args = {
-  //     number: contactNumber,
-  //     prompt: false,
-  //   };
-
-  //   callLib.immediatePhoneCall(args).catch(console.error);
-  // };
-
   const handleCallPress = (contactNumber: string) => {
     const args = {
       number: contactNumber,
       prompt: false,
     };
 
-    call(args).catch(console.error);
+    RNImmediatePhoneCall.immediatePhoneCall(args).catch(console.error);
   };
+
+  // const handleCallPress = (contactNumber: string) => {
+  //   const args = {
+  //     number: contactNumber,
+  //     prompt: false,
+  //   };
+
+  //   if (RNImmediatePhoneCall && RNImmediatePhoneCall.immediatePhoneCall) {
+  //     RNImmediatePhoneCall.immediatePhoneCall(args).catch(() => {
+  //       // If immediate call fails, use the alternative method
+  //       handleAlternativeCall(args);
+  //     });
+  //   } else {
+  //     // If RNImmediatePhoneCall is not available, use the alternative method
+  //     handleAlternativeCall(args);
+  //   }
+  // };
+
+  // const handleAlternativeCall = (callArgs: {
+  //   number: string;
+  //   prompt: boolean;
+  // }) => {
+  //   call(callArgs).catch((error) => {
+  //     console.error("Error making the call:", error);
+  //   });
+  // };
 
   return (
     <View className="flex-1 items-center justify-center">
