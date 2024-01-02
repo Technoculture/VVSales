@@ -42,32 +42,6 @@ export default function TabOneScreen() {
     RNImmediatePhoneCall.immediatePhoneCall(args).catch(console.error);
   };
 
-  // const handleCallPress = (contactNumber: string) => {
-  //   const args = {
-  //     number: contactNumber,
-  //     prompt: false,
-  //   };
-
-  //   if (RNImmediatePhoneCall && RNImmediatePhoneCall.immediatePhoneCall) {
-  //     RNImmediatePhoneCall.immediatePhoneCall(args).catch(() => {
-  //       // If immediate call fails, use the alternative method
-  //       handleAlternativeCall(args);
-  //     });
-  //   } else {
-  //     // If RNImmediatePhoneCall is not available, use the alternative method
-  //     handleAlternativeCall(args);
-  //   }
-  // };
-
-  // const handleAlternativeCall = (callArgs: {
-  //   number: string;
-  //   prompt: boolean;
-  // }) => {
-  //   call(callArgs).catch((error) => {
-  //     console.error("Error making the call:", error);
-  //   });
-  // };
-
   return (
     <View className="flex-1 items-center justify-center">
       <View
