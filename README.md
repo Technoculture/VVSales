@@ -4,13 +4,11 @@
 
 ## Getting Started Tasks
 
-- Mic Recording, Store Recordings, Play Recordings
-- Take photo
-- Pick photo from gallary
-- Pick file(pdfs only) from Files on phone
-- Connect to OpenAI APIs - Whisper, GPT3, TTS
-- Add sqlite db / lanceDB?
-- Add function Calling
+-adding call feature
+-tab based navigation
+-accessing call logs
+-tasks fetching from api
+
 
 ## Basic Features
 
@@ -18,9 +16,16 @@
 
 # Build
 
-```sh
-yarn run ios --clear
-```
+install packages using 
+yarn install
+
+server 
+json-server --watch db.json --port 3001
+use ngrok http 3001 to expose it 
+put that in .env file
+
+for app
+yarn start
 
 # Troubleshooting
 
