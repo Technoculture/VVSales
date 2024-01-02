@@ -27,6 +27,19 @@ export default function TabOneScreen() {
       .catch((error) => console.error("Error fetching tasks:", error));
   };
 
+  const updateTrials = (taskId: string) => {
+    // Send a request to update trials on the server
+    fetch(`${API_URL}/${taskId}/updateTrials`, {
+      method: "PATCH",
+    })
+      .then((response) => response.json())
+      .then(() => {
+        // Fetch tasks again to get the updated data
+        fetchTasks();
+      })
+      .catch((error) => console.error("Error updating trials:", error));
+  };
+
   useEffect(() => {
     // Fetch tasks when the component mounts
     fetchTasks();
@@ -44,14 +57,17 @@ export default function TabOneScreen() {
   }, []);
 
   // Function to handle call button press
-  const handleCallPress = (contactNumber: string) => {
+  const handleCallPress = (contactNumber: string, taskId: string) => {
     const args = {
       number: contactNumber,
       prompt: false,
     };
 
+    // Update trials and then make the call
+    updateTrials(taskId);
     call(args).catch(console.error);
   };
+
   return (
     <View className="flex-1 items-center justify-center">
       <View
@@ -73,7 +89,7 @@ export default function TabOneScreen() {
                 <Text>{`Contact Number: ${item.contactNumber}`}</Text>
                 <Text>{`Trials: ${item.trials}`}</Text>
                 <TouchableOpacity
-                  onPress={() => handleCallPress(item.contactNumber)}
+                  onPress={() => handleCallPress(item.contactNumber, item.id)}
                 >
                   <Text className="text-blue-500">Call</Text>
                 </TouchableOpacity>
