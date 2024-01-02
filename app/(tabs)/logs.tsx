@@ -15,32 +15,7 @@ export default function TabTwoScreen() {
   const [callLogs, setCallLogs] = useState<CallLogItem[]>([]);
 
   useEffect(() => {
-    // Function to format call duration
-    const formatCallDuration = (duration: string): string => {
-      const seconds = parseInt(duration, 10);
-      const hours = Math.floor(seconds / 3600);
-      const remainingSeconds = seconds % 3600;
-      const minutes = Math.floor(remainingSeconds / 60);
-      const remainingSecondsInMinute = remainingSeconds % 60;
-
-      let formattedDuration = "";
-
-      if (hours > 0) {
-        formattedDuration += `${hours} hours `;
-      }
-
-      if (minutes > 0) {
-        formattedDuration += `${minutes} minutes `;
-      }
-
-      if (hours === 0 || (hours === 0 && minutes === 0)) {
-        formattedDuration += `${remainingSecondsInMinute} seconds`;
-      }
-
-      return formattedDuration.trim();
-    };
-
-    // Function to fetch call logs for the current day
+    // Function to fetch call logs
     const fetchCallLogs = async () => {
       try {
         const granted = await PermissionsAndroid.request(
@@ -55,32 +30,20 @@ export default function TabTwoScreen() {
         );
 
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          const currentDate = new Date();
-          const startOfDay = new Date(
-            currentDate.getFullYear(),
-            currentDate.getMonth(),
-            currentDate.getDate(),
-            0,
-            0,
-            0,
-          );
-
-          CallLogs.load(100).then((logs) => {
+          CallLogs.load(5).then((logs) => {
             console.log("Call logs:", logs);
 
-            const formattedLogs: CallLogItem[] = logs
-              .filter((log) => new Date(log.timestamp) >= startOfDay)
-              .map((log) => {
-                // Log the entire 'log' object to inspect its structure
-                console.log("Call log structure:", log);
+            const formattedLogs: CallLogItem[] = logs.map((log) => {
+              // Log the entire 'log' object to inspect its structure
+              console.log("Call log structure:", log);
 
-                return {
-                  phoneNumber: log.phoneNumber,
-                  callType: log.callType,
-                  callDate: new Date(log.timestamp).toLocaleString(),
-                  callDuration: formatCallDuration(log.duration),
-                };
-              });
+              return {
+                phoneNumber: log.phoneNumber,
+                callType: log.callType,
+                callDate: new Date(log.timestamp).toLocaleString(),
+                callDuration: log.duration,
+              };
+            });
 
             console.log("Formatted logs:", formattedLogs);
             setCallLogs(formattedLogs);
