@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { API_URL } from "@env";
-import React, { useState, useEffect } from "react";
-import { FlatList, TouchableOpacity, Linking, Platform } from "react-native";
+import React, { useState, useEffect, useCallback } from "react";
+import { FlatList, TouchableOpacity, RefreshControl } from "react-native";
 import RNImmediatePhoneCall from "react-native-immediate-phone-call";
 import call from "react-native-phone-call";
 
@@ -16,8 +15,9 @@ interface Task {
 
 export default function TabOneScreen() {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const fetchTasks = () => {
+  const fetchTasks = useCallback(() => {
     fetch(API_URL)
       .then((response) => {
         if (!response.ok) {
@@ -29,8 +29,9 @@ export default function TabOneScreen() {
         console.log("Fetched data:", data);
         setTasks(data);
       })
-      .catch((error) => console.error("Error fetching tasks:", error));
-  };
+      .catch((error) => console.error("Error fetching tasks:", error))
+      .finally(() => setRefreshing(false));
+  }, []);
 
   const updateTrials = (taskId: string) => {
     // Send a request to update trials on the server
@@ -45,21 +46,23 @@ export default function TabOneScreen() {
       .catch((error) => console.error("Error updating trials:", error));
   };
 
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchTasks();
+  };
+
   useEffect(() => {
     // Fetch tasks when the component mounts
     fetchTasks();
 
     // Set up interval to fetch tasks every 2 minutes
-    const intervalId = setInterval(
-      () => {
-        fetchTasks();
-      },
-      2 * 60 * 1000,
-    );
+    const intervalId = setInterval(() => {
+      fetchTasks();
+    }, 2 * 60 * 1000);
 
     // Clear the interval when the component unmounts
     return () => clearInterval(intervalId);
-  }, []);
+  }, [fetchTasks]);
 
   // Function to handle call button press
   const handleCallPress = (contactNumber: string, taskId: string) => {
@@ -75,37 +78,26 @@ export default function TabOneScreen() {
 
   return (
     <View className="flex-1 items-center justify-center">
-      <View
-        className="my-6 h-1 w-80% bg-gray-300"
-        lightColor="#eee"
-        darkColor="rgba(255,255,255,0.1)"
+      <FlatList
+        data={tasks}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }: { item: Task }) => (
+          <View>
+            <Text>{`Name: ${item.name}`}</Text>
+            <Text>{`Contact Number: ${item.contactNumber}`}</Text>
+            <Text>{`Trials: ${item.trials}`}</Text>
+            <TouchableOpacity
+              onPress={() => handleCallPress(item.contactNumber, item.id)}
+            >
+              <Text className="text-blue-500">Call</Text>
+            </TouchableOpacity>
+            <View className="border-b border-black mb-10" />
+          </View>
+        )}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }
       />
-      {/* FlatList to render tasks */}
-      {tasks ? (
-        tasks.length === 0 ? (
-          <Text>No tasks available.</Text>
-        ) : (
-          <FlatList
-            data={tasks}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }: { item: Task }) => (
-              <View>
-                <Text>{`Name: ${item.name}`}</Text>
-                <Text>{`Contact Number: ${item.contactNumber}`}</Text>
-                <Text>{`Trials: ${item.trials}`}</Text>
-                <TouchableOpacity
-                  onPress={() => handleCallPress(item.contactNumber, item.id)}
-                >
-                  <Text className="text-blue-500">Call</Text>
-                </TouchableOpacity>
-                <View className="border-b border-black mb-10" />
-              </View>
-            )}
-          />
-        )
-      ) : (
-        <Text>Loading...</Text>
-      )}
     </View>
   );
 }
