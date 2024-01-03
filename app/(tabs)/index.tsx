@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { API_URL } from "@env";
 import React, { useState, useEffect, useCallback } from "react";
 import { FlatList, TouchableOpacity, RefreshControl } from "react-native";
@@ -56,9 +57,12 @@ export default function TabOneScreen() {
     fetchTasks();
 
     // Set up interval to fetch tasks every 2 minutes
-    const intervalId = setInterval(() => {
-      fetchTasks();
-    }, 2 * 60 * 1000);
+    const intervalId = setInterval(
+      () => {
+        fetchTasks();
+      },
+      2 * 60 * 1000,
+    );
 
     // Clear the interval when the component unmounts
     return () => clearInterval(intervalId);
