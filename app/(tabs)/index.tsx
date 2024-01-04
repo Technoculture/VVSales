@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { API_URL } from "@env";
 import React, { useState, useEffect, useCallback } from "react";
 import { FlatList, TouchableOpacity, RefreshControl } from "react-native";
 import RNImmediatePhoneCall from "react-native-immediate-phone-call";
 import call from "react-native-phone-call";
 
+import { fetchAndSaveCallLogs } from "./CallLogUtility";
 import { Text, View } from "../../components/Themed";
+import { initDatabase, insertMockData, fetchTasks } from "../../database";
 
 interface Task {
   id: string;
@@ -18,64 +18,45 @@ export default function TabOneScreen() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchTasks = useCallback(() => {
-    fetch(API_URL)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log("Fetched data:", data);
-        setTasks(data);
-      })
-      .catch((error) => console.error("Error fetching tasks:", error))
-      .finally(() => setRefreshing(false));
+  useEffect(() => {
+    initDatabase();
+    insertMockData();
+    fetchData();
+    fetchAndSaveCallLogs();
+  }, []);
+
+  const fetchData = useCallback(() => {
+    fetchTasks(setTasks);
   }, []);
 
   const updateTrials = (taskId: string) => {
-    // Send a request to update trials on the server
-    fetch(`${API_URL}/${taskId}/updateTrials`, {
-      method: "PATCH",
-    })
-      .then((response) => response.json())
-      .then(() => {
-        // Fetch tasks again to get the updated data
-        fetchTasks();
-      })
-      .catch((error) => console.error("Error updating trials:", error));
+    fetchData();
   };
 
   const handleRefresh = () => {
     setRefreshing(true);
-    fetchTasks();
+    fetchData();
   };
 
   useEffect(() => {
-    // Fetch tasks when the component mounts
-    fetchTasks();
+    fetchData();
 
-    // Set up interval to fetch tasks every 2 minutes
     const intervalId = setInterval(
       () => {
-        fetchTasks();
+        fetchData();
       },
       2 * 60 * 1000,
     );
 
-    // Clear the interval when the component unmounts
     return () => clearInterval(intervalId);
-  }, [fetchTasks]);
+  }, [fetchData]);
 
-  // Function to handle call button press
   const handleCallPress = (contactNumber: string, taskId: string) => {
     const args = {
       number: contactNumber,
       prompt: false,
     };
 
-    // Update trials and then make the call
     updateTrials(taskId);
     call(args).catch(console.error);
   };
