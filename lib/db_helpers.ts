@@ -2,7 +2,6 @@ import { desc, gt } from "drizzle-orm";
 
 import { DB, local_db, turso_db } from "../drizzle/index";
 import { callLogs as logsTable, tasks as tasksTable } from "../drizzle/schema";
-
 import { checkPermission } from "../lib/permissions";
 
 const getCallLogs = async (db: DB) => {
