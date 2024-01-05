@@ -1,12 +1,12 @@
-import { drizzle } from "drizzle-orm/expo-sqlite";
-import { openDatabaseSync } from "expo-sqlite/next";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import React, { useState, useEffect, useCallback } from "react";
 import { FlatList, TouchableOpacity, RefreshControl } from "react-native";
 import RNImmediatePhoneCall from "react-native-immediate-phone-call";
 import call from "react-native-phone-call";
 
-import { fetchAndSaveCallLogs } from "./CallLogUtility";
 import { Text, View } from "../../components/Themed";
+import { sync } from "../../lib/db_helpers";
 
 interface Task {
   id: string;
@@ -21,7 +21,7 @@ export default function TabOneScreen() {
 
   useEffect(() => {
     // fetchData();
-    fetchAndSaveCallLogs();
+    sync();
   }, []);
 
   // const fetchData = useCallback(() => {
@@ -34,20 +34,20 @@ export default function TabOneScreen() {
 
   const handleRefresh = () => {
     setRefreshing(true);
-    // fetchData();
+    sync();
   };
 
   useEffect(() => {
     // fetchData();
-    fetchAndSaveCallLogs();
+    sync();
   }, []);
 
-  //   const intervalId = setInterval(
-  //     () => {
-  //       fetchData();
-  //     },
-  //     2 * 60 * 1000,
-  //   );
+  const intervalId = setInterval(
+    () => {
+      sync();
+    },
+    2 * 60 * 1000,
+  );
 
   //   return () => clearInterval(intervalId);
   // }, [fetchData]);

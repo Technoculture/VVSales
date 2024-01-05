@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "76431920-89a3-43f3-a160-c8235ede7c7b",
-  "prevId": "81349d16-3999-49f8-8df8-215e6ace1a34",
+  "id": "4d7d81be-b98e-4a34-abcd-506c04013c5c",
+  "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "callLogs": {
       "name": "callLogs",
@@ -63,7 +63,7 @@
           "type": "integer",
           "primaryKey": true,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": true
         },
         "name": {
           "name": "name",
@@ -111,7 +111,7 @@
           "name": "modified_at",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         }
       },
