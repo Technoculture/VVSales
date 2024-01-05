@@ -8,7 +8,7 @@ import {
 
 export const tasks = sqliteTable("tasks", {
   id: integer("id").primaryKey(),
-  //accoding to a stcackoverflow post, the primary key is autoincremented by default
+  //accoding to a stackoverflow post, the primary key is autoincremented by default
   name: text("name"),
   contactNumber: text("contactNumber"),
   city: text("city"),

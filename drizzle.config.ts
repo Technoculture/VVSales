@@ -9,3 +9,9 @@ export default {
     authToken: process.env.TURSO_DB_AUTH_TOKEN as string,
   },
 } satisfies Config;
+
+// export expo {
+//   schema: "./drizzle/schema.ts",
+//   out: "./drizzle/migrations",
+//   driver: "expo", // <--- very important
+// } satisfies Config;

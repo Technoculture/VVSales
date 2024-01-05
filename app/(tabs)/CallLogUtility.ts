@@ -1,38 +1,47 @@
-import { PermissionsAndroid } from "react-native";
+// CallLogUtility.ts
+import { openDatabaseSync } from "expo-sqlite/next";
+import { PermissionsAndroid, Platform } from "react-native";
 import CallLogs from "react-native-call-log";
 
-import { initDatabase, db } from "../../database";
-
-const requestCallLogPermission = async () => {
-  // ... (unchanged)
-};
-
-const fetchAndSaveCallLogs = async () => {
+export const fetchAndSaveCallLogs = async () => {
   try {
-    const permissionGranted = await requestCallLogPermission();
-
-    if (permissionGranted) {
-      const callLogs = await CallLogs.load(-1);
-      saveCallLogsToDatabase(callLogs);
+    if (Platform.OS === "android") {
+      // Request permission for Android
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_CALL_LOG,
+        {
+          title: "Call Log Permission",
+          message: "This app needs access to your call logs.",
+          buttonNeutral: "Ask Me Later",
+          buttonNegative: "Cancel",
+          buttonPositive: "OK",
+        },
+      );
+      if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+        console.error("Call log permission denied");
+        return;
+      }
     }
+
+    // Fetch call logs
+    const callLogs = await CallLogs.getCallLogs();
+
+    const expoDb = openDatabaseSync("callLogs.db");
+    const db = drizzle(expoDb, { schema });
+
+    callLogs.forEach((log: any) => {
+      db.insert()
+        .into("callLogs")
+        .values({
+          taskId: 1,
+          callTime: new Date(log.date).getTime(),
+          callStatus: log.type,
+          duration: log.duration,
+        });
+    });
+
+    console.log("Call logs fetched and saved successfully");
   } catch (error) {
-    console.error("Error fetching call logs:", error);
+    console.error("Error fetching and saving call logs:", error);
   }
 };
-
-const saveCallLogsToDatabase = (callLogs) => {
-  initDatabase();
-
-  db.transaction((tx) => {
-    callLogs.forEach((log) => {
-      const { timestamp, duration, callType } = log;
-      const taskId = 1; // Replace with the appropriate task ID from your app
-      tx.executeSql(
-        "INSERT INTO call_logs (timestamp, task_id, call_type, duration) VALUES (?, ?, ?, ?)",
-        [timestamp, taskId, callType, duration],
-      );
-    });
-  });
-};
-
-export { fetchAndSaveCallLogs };

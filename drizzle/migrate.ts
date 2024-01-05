@@ -9,6 +9,7 @@ export const client = createClient({
 });
 
 export const db = drizzle(client);
+//define schema
 
 async function main() {
   try {

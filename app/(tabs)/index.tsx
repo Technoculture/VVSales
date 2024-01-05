@@ -1,3 +1,5 @@
+import { drizzle } from "drizzle-orm/expo-sqlite";
+import { openDatabaseSync } from "expo-sqlite/next";
 import React, { useState, useEffect, useCallback } from "react";
 import { FlatList, TouchableOpacity, RefreshControl } from "react-native";
 import RNImmediatePhoneCall from "react-native-immediate-phone-call";
@@ -5,7 +7,6 @@ import call from "react-native-phone-call";
 
 import { fetchAndSaveCallLogs } from "./CallLogUtility";
 import { Text, View } from "../../components/Themed";
-import { initDatabase, insertMockData, fetchTasks } from "../../database";
 
 interface Task {
   id: string;
@@ -19,37 +20,37 @@ export default function TabOneScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    initDatabase();
-    insertMockData();
-    fetchData();
+    // fetchData();
     fetchAndSaveCallLogs();
   }, []);
 
-  const fetchData = useCallback(() => {
-    fetchTasks(setTasks);
-  }, []);
+  // const fetchData = useCallback(() => {
+  //   fetchTasks(setTasks);
+  // }, []);
 
-  const updateTrials = (taskId: string) => {
-    fetchData();
-  };
+  // const updateTrials = (taskId: string) => {
+  //   fetchData();
+  // };
 
   const handleRefresh = () => {
     setRefreshing(true);
-    fetchData();
+    // fetchData();
   };
 
   useEffect(() => {
-    fetchData();
+    // fetchData();
+    fetchAndSaveCallLogs();
+  }, []);
 
-    const intervalId = setInterval(
-      () => {
-        fetchData();
-      },
-      2 * 60 * 1000,
-    );
+  //   const intervalId = setInterval(
+  //     () => {
+  //       fetchData();
+  //     },
+  //     2 * 60 * 1000,
+  //   );
 
-    return () => clearInterval(intervalId);
-  }, [fetchData]);
+  //   return () => clearInterval(intervalId);
+  // }, [fetchData]);
 
   const handleCallPress = (contactNumber: string, taskId: string) => {
     const args = {
@@ -57,7 +58,7 @@ export default function TabOneScreen() {
       prompt: false,
     };
 
-    updateTrials(taskId);
+    // updateTrials(taskId);
     call(args).catch(console.error);
   };
 
