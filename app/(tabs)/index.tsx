@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-
 import React, { useState, useEffect, useCallback } from "react";
 import { FlatList, TouchableOpacity, RefreshControl } from "react-native";
 import RNImmediatePhoneCall from "react-native-immediate-phone-call";
@@ -13,6 +12,8 @@ interface Task {
   name: string;
   contactNumber: string;
   trials: number;
+  city: string;
+  state: string;
 }
 
 export default function TabOneScreen() {
@@ -20,45 +21,48 @@ export default function TabOneScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    // fetchData();
-    sync();
+    sync(setTasks);
   }, []);
 
-  // const fetchData = useCallback(() => {
-  //   fetchTasks(setTasks);
-  // }, []);
+  const fetchData = useCallback(async () => {
+    const tasks = await getTasks();
+    setTasks(tasks);
+  }, []);
 
-  // const updateTrials = (taskId: string) => {
-  //   fetchData();
-  // };
-
-  const handleRefresh = () => {
-    setRefreshing(true);
-    sync();
+  const updateTrials = async (taskId: string) => {
+    const updatedTasks = tasks.map((task) => {
+      if (task.id === taskId) {
+        return {
+          ...task,
+          trials: task.trials + 1,
+        };
+      }
+      return task;
+    });
+    setTasks(updatedTasks);
   };
 
-  useEffect(() => {
-    // fetchData();
-    sync();
+  const handleRefresh = useCallback(() => {
+    setRefreshing(true);
+    sync(setTasks);
+    setRefreshing(false);
   }, []);
 
-  const intervalId = setInterval(
-    () => {
-      sync();
-    },
-    2 * 60 * 1000,
-  );
-
-  //   return () => clearInterval(intervalId);
-  // }, [fetchData]);
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      sync(setTasks);
+    }, 120000);
+    return () => clearInterval(intervalId);
+  }, []);
 
   const handleCallPress = (contactNumber: string, taskId: string) => {
     const args = {
       number: contactNumber,
       prompt: false,
     };
+    updateTrials(taskId);
+    // RNImmediatePhoneCall.immediatePhoneCall(contactNumber);
 
-    // updateTrials(taskId);
     call(args).catch(console.error);
   };
 
@@ -72,6 +76,9 @@ export default function TabOneScreen() {
             <Text>{`Name: ${item.name}`}</Text>
             <Text>{`Contact Number: ${item.contactNumber}`}</Text>
             <Text>{`Trials: ${item.trials}`}</Text>
+            <Text>{`City: ${item.city}`}</Text>
+            <Text>{`State: ${item.state}`}</Text>
+            <Text>{`ID: ${item.id}`}</Text>
             <TouchableOpacity
               onPress={() => handleCallPress(item.contactNumber, item.id)}
             >
