@@ -19,3 +19,14 @@ export const tasks = sqliteTable("tasks", {
     .$defaultFn(() => sql`CURRENT_TIMESTAMP`),
   modifiedAt: integer("modified_at", { mode: "timestamp_ms" }),
 });
+
+export const callLogs = sqliteTable("callLogs", {
+  id: integer("id").primaryKey(),
+  taskId: integer("taskId"),
+  callTime: integer("callTime"),
+  callStatus: text("callStatus"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(() => sql`CURRENT_TIMESTAMP`),
+  duration: integer("duration"),
+});
