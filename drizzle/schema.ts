@@ -9,10 +9,10 @@ import {
 export const tasks = sqliteTable("tasks", {
   id: integer("id").primaryKey({ autoIncrement: true }).notNull(),
   name: text("name"),
-  contactNumber: text("contactNumber"),
+  contactNumber: text("contactNumber").notNull(),
   city: text("city"),
   state: text("state"),
-  targetCallCount: integer("targetCallCount"),
+  targetCallCount: integer("targetCallCount").default(1),
   createdAt: integer("created_at", { mode: "timestamp_ms" })
     .notNull()
     .$defaultFn(() => sql`CURRENT_TIMESTAMP`),
@@ -22,10 +22,10 @@ export const tasks = sqliteTable("tasks", {
 });
 
 export const callLogs = sqliteTable("callLogs", {
-  id: integer("id").primaryKey(),
-  taskId: integer("taskId"),
+  id: integer("id").primaryKey({ autoIncrement: true }).notNull(),
+  taskId: integer("taskId"), //foreign key
   callTime: integer("callTime"),
-  callStatus: text("callStatus"),
+  callStatus: text("callStatus"), //enum: ['incoming', 'outgoing', 'missed', 'rejected']
   createdAt: integer("created_at", { mode: "timestamp_ms" })
     .notNull()
     .$defaultFn(() => sql`CURRENT_TIMESTAMP`),

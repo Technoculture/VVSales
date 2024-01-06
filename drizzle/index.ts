@@ -1,17 +1,18 @@
+import { TURSO_DB_URL, TURSO_DB_AUTH_TOKEN } from "@env";
 import { createClient } from "@libsql/client";
-import dotenv from "dotenv";
+// import dotenv from "dotenv";
 import { drizzle as expoDrizzle } from "drizzle-orm/expo-sqlite";
 import { drizzle as tursoDrizzle } from "drizzle-orm/libsql";
 import { openDatabaseSync } from "expo-sqlite/next";
-import path from "path";
+// import path from "path";
 
 import { callLogs, tasks } from "./schema";
 
-dotenv.config({ path: path.resolve(__dirname, "../../../.env.local") });
+// dotenv.config({ path: path.resolve(__dirname, "../../../.env.local") });
 
 const client = createClient({
-  url: process.env.TURSO_DB_URL || "",
-  authToken: process.env.TURSO_DB_AUTH_TOKEN || "",
+  url: TURSO_DB_URL || "",
+  authToken: TURSO_DB_AUTH_TOKEN || "",
 });
 
 const expo = openDatabaseSync("callLogs.db");

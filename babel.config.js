@@ -5,6 +5,7 @@ module.exports = function (api) {
     plugins: [
       "expo-router/babel",
       "react-native-reanimated/plugin",
+      
       ["inline-import", { extensions: [".sql"] }],
       "nativewind/babel",
       [
@@ -18,6 +19,7 @@ module.exports = function (api) {
           allowUndefined: true,
         },
       ],
+      ["@babel/plugin-transform-private-methods", { loose: true }],
     ],
   };
 };
