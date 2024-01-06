@@ -20,9 +20,11 @@ export default function TabOneScreen() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    sync(setTasks);
-  }, []);
+  const getTasks = async () => {
+    const tasks = await fetch("API_URL" + "/tasks");
+    const json = await tasks.json();
+    return json;
+  };
 
   const fetchData = useCallback(async () => {
     const tasks = await getTasks();
