@@ -5,7 +5,7 @@ import RNImmediatePhoneCall from "react-native-immediate-phone-call";
 import call from "react-native-phone-call";
 
 import { Text, View } from "../../components/Themed";
-import { sync } from "../../lib/db_helpers";
+import { getTasks, sync } from "../../lib/db_helpers";
 
 interface Task {
   id: string;
@@ -20,16 +20,11 @@ export default function TabOneScreen() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const getTasks = async () => {
-    const tasks = await fetch("API_URL" + "/tasks");
-    const json = await tasks.json();
-    return json;
-  };
-
-  const fetchData = useCallback(async () => {
-    const tasks = await getTasks();
+  //import tasks function from db_helpers and set it to tasks
+  const fetchTasks = async () => {
+    const tasks = await sync();
     setTasks(tasks);
-  }, []);
+  };
 
   const updateTrials = async (taskId: string) => {
     const updatedTasks = tasks.map((task) => {
@@ -44,15 +39,16 @@ export default function TabOneScreen() {
     setTasks(updatedTasks);
   };
 
-  const handleRefresh = useCallback(() => {
+  const handleRefresh = useCallback(async () => {
     setRefreshing(true);
-    sync(setTasks);
+    const updatedTasks = await sync();
+    setTasks(updatedTasks);
     setRefreshing(false);
   }, []);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      sync(setTasks);
+      sync();
     }, 120000);
     return () => clearInterval(intervalId);
   }, []);

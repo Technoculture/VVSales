@@ -1,7 +1,7 @@
 import { createClient } from "@libsql/client/http";
 import { drizzle } from "drizzle-orm/libsql";
 
-import * as schema from "../drizzle/schema";
+// import * as schema from "../drizzle/schema";
 
 interface Env {
   TURSO_DB_AUTH_TOKEN?: string;
