@@ -6,15 +6,7 @@ import call from "react-native-phone-call";
 
 import { Text, View } from "../../components/Themed";
 import { getTasks, sync } from "../../lib/db_helpers";
-
-interface Task {
-  id: string;
-  name: string;
-  contactNumber: string;
-  trials: number;
-  city: string;
-  state: string;
-}
+import { Task } from "../../lib/types";
 
 export default function TabOneScreen() {
   const [tasks, setTasks] = useState<Task[]>([]);

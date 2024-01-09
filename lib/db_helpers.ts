@@ -54,8 +54,11 @@ const sync = async () => {
       });
     });
     await postCallLogs(callLogsToPost);
+
+    return tasks;
   } catch (error) {
     console.error("Error syncing:", error);
+    return [];
   }
 };
 

@@ -17,3 +17,12 @@ export interface callLogs {
   createdAt: number;
   duration: number;
 }
+
+export interface Task {
+  id: string;
+  name: string;
+  contactNumber: string;
+  trials: number;
+  city: string;
+  state: string;
+}
