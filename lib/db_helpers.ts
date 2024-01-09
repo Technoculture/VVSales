@@ -5,6 +5,8 @@ import CallLogs from "react-native-call-log";
 // import { callLogs as logsTable, tasks as tasksTable } from "../drizzle/schema";
 import { checkPermission } from "../lib/permissions";
 
+const API_URL = process.env.API_URL;
+
 //fetch call logs from mobile
 const getCallLogs = async () => {
   try {
@@ -17,9 +19,11 @@ const getCallLogs = async () => {
 };
 
 //get tasks from cloudflare link
+//check if data is coming from cloudflare link
 const getTasks = async () => {
   try {
-    const tasks = await fetch("API_URL/tasks").then((res) => res.json());
+    const response = await fetch(API_URL + "/tasks");
+    const tasks = await response.json();
     return tasks;
   } catch (error) {
     console.error("Error fetching tasks:", error);
@@ -29,7 +33,7 @@ const getTasks = async () => {
 //post call logs to cloudflare link
 const postCallLogs = async (callLogs: any) => {
   try {
-    const response = await fetch("API_URL/call-logs", {
+    const response = await fetch(API_URL + "/call-logs", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
