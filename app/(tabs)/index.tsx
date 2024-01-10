@@ -41,10 +41,45 @@ export default function TabOneScreen() {
     setTasks(updatedTasks);
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const tasksResponse = await getTasks();
+        const callLogs = await getCallLogs();
+        const tasks = tasksResponse.rows;
+
+        // Use tasks and callLogs data as needed
+        console.log("Tasks:", tasks);
+        console.log("Call Logs:", callLogs);
+
+        // Add your logic for processing call logs and updating tasks if necessary
+
+        setTasks(tasks);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+    const intervalId = setInterval(fetchData, 5 * 60 * 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const postAndSyncCallLogs = async () => {
+    try {
+      const callLogs = await getCallLogs();
+      await postCallLogs(callLogs);
+      console.log("Call logs posted successfully.");
+    } catch (error) {
+      console.error("Error posting call logs:", error);
+    }
+  };
+
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
-    const updatedTasks = await fetchTasks();
-    setTasks(updatedTasks);
+    await fetchTasks();
+    await postAndSyncCallLogs();
     setRefreshing(false);
   }, []);
 

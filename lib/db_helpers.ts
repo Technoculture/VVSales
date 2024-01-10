@@ -9,15 +9,15 @@ const API_URL = process.env.API_URL;
 
 const getCallLogs = async () => {
   try {
-    if (!(await checkPermission())) return;
+    if (!(await checkPermission())) return [];
     const callLogs = await CallLogs.loadAll();
     console.log("Call logs fetched successfully", callLogs);
     return callLogs;
   } catch (error) {
     console.error("Error fetching call logs:", error);
+    return [];
   }
 };
-//check if data is coming from cloudflare link
 const getTasks = async () => {
   try {
     const response = await fetch(API_URL + "/tasks");
@@ -27,7 +27,6 @@ const getTasks = async () => {
     console.error("Error fetching tasks:", error);
   }
 };
-//post call logs to cloudflare link
 const postCallLogs = async (callLogs: any) => {
   try {
     const response = await fetch(API_URL + "/call-logs", {
@@ -37,15 +36,15 @@ const postCallLogs = async (callLogs: any) => {
       },
       body: JSON.stringify(callLogs),
     });
+    console.log("Call logs posted successfully:", response);
     return response;
   } catch (error) {
     console.error("Error posting call logs:", error);
   }
 };
-//sync call logs and tasks
 const sync = async () => {
   try {
-    if (!(await checkPermission())) return;
+    if (!(await checkPermission())) return [];
     const callLogs = await getCallLogs();
     const tasks = await getTasks();
     const callLogsToPost = callLogs.filter((log: any) => {
