@@ -37,7 +37,7 @@ export default function TabOneScreen() {
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
-    const updatedTasks = await sync();
+    const updatedTasks = await fetchTasks();
     setTasks(updatedTasks);
     setRefreshing(false);
   }, []);
@@ -46,7 +46,7 @@ export default function TabOneScreen() {
     fetchTasks();
     const intervalId = setInterval(
       () => {
-        sync();
+        fetchTasks();
       },
       5 * 60 * 1000,
     );
@@ -60,7 +60,6 @@ export default function TabOneScreen() {
     };
     updateTrials(taskId);
     // RNImmediatePhoneCall.immediatePhoneCall(contactNumber);
-    updateTrials(taskId);
     call(args).catch(console.error);
   };
 
@@ -71,22 +70,21 @@ export default function TabOneScreen() {
           <Text>No tasks available.</Text>
         ) : (
           <FlatList
-            data={tasks}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }: { item: Task }) => {
+            data={tasks.rows}
+            keyExtractor={(item) => item[0].toString()}
+            renderItem={({ item }: { item: Task[] }) => {
+              const task = item;
               try {
                 return (
                   <View>
-                    <Text>{`Name: ${item.name}`}</Text>
-                    <Text>{`Contact Number: ${item.contactNumber}`}</Text>
-                    <Text>{`Trials: ${item.trials}`}</Text>
-                    <Text>{`City: ${item.city}`}</Text>
-                    <Text>{`State: ${item.state}`}</Text>
-                    <Text>{`ID: ${item.id}`}</Text>
+                    <Text>{`Name: ${task[1]}`}</Text>
+                    <Text>{`Contact Number: ${task[2]}`}</Text>
+                    <Text>{`Trials: ${task[5]}`}</Text>
+                    <Text>{`City: ${task[3]}`}</Text>
+                    <Text>{`State: ${task[4]}`}</Text>
+                    <Text>{`ID: ${task[0]}`}</Text>
                     <TouchableOpacity
-                      onPress={() =>
-                        handleCallPress(item.contactNumber, item.id)
-                      }
+                      onPress={() => handleCallPress(task[2], task[0])}
                     >
                       <Text className="text-blue-500">Call</Text>
                     </TouchableOpacity>
