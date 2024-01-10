@@ -1,11 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect, useCallback } from "react";
 import { FlatList, TouchableOpacity, RefreshControl } from "react-native";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import RNImmediatePhoneCall from "react-native-immediate-phone-call";
 import call from "react-native-phone-call";
 
 import { Text, View } from "../../components/Themed";
-import { getTasks, sync } from "../../lib/db_helpers";
+import {
+  getTasks,
+  sync,
+  getCallLogs,
+  postCallLogs,
+} from "../../lib/db_helpers";
 import { Task } from "../../lib/types";
 
 export default function TabOneScreen() {
@@ -44,6 +50,7 @@ export default function TabOneScreen() {
 
   useEffect(() => {
     fetchTasks();
+    getCallLogs();
     const intervalId = setInterval(
       () => {
         fetchTasks();
@@ -93,7 +100,7 @@ export default function TabOneScreen() {
                 );
               } catch (error) {
                 console.error("Error rendering item:", error);
-                return null; // or some fallback UI
+                return null;
               }
             }}
             refreshControl={
