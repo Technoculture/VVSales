@@ -22,7 +22,7 @@ export default function TabOneScreen() {
     try {
       const tasks = await getTasks();
       setTasks(tasks);
-      console.log(tasks);
+      // Removed console.log statement
     } catch (error) {
       console.error("Error fetching tasks:", error);
     }
