@@ -8,6 +8,7 @@ import { checkPermission } from "../lib/permissions";
 const API_URL = process.env.API_URL;
 
 const getCallLogs = async () => {
+    console.log("Tasks fetched successfully");
   try {
     if (!(await checkPermission())) return [];
     const callLogs = await CallLogs.loadAll();
@@ -19,6 +20,7 @@ const getCallLogs = async () => {
   }
 };
 const getTasks = async () => {
+    console.log("Tasks fetched successfully");
   try {
     const response = await fetch(API_URL + "/tasks");
     const tasks = await response.json();
