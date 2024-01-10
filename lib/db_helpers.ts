@@ -17,8 +17,6 @@ const getCallLogs = async () => {
     console.error("Error fetching call logs:", error);
   }
 };
-
-//get tasks from cloudflare link
 //check if data is coming from cloudflare link
 const getTasks = async () => {
   try {

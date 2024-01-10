@@ -12,10 +12,14 @@ export default function TabOneScreen() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  //import tasks function from db_helpers and set it to tasks
   const fetchTasks = async () => {
-    const tasks = await sync();
-    setTasks(tasks);
+    try {
+      const tasks = await getTasks();
+      setTasks(tasks);
+      console.log(tasks);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
   };
 
   const updateTrials = async (taskId: string) => {
@@ -39,9 +43,13 @@ export default function TabOneScreen() {
   }, []);
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      sync();
-    }, 120000);
+    fetchTasks();
+    const intervalId = setInterval(
+      () => {
+        sync();
+      },
+      5 * 60 * 1000,
+    );
     return () => clearInterval(intervalId);
   }, []);
 
@@ -52,35 +60,55 @@ export default function TabOneScreen() {
     };
     updateTrials(taskId);
     // RNImmediatePhoneCall.immediatePhoneCall(contactNumber);
-
+    updateTrials(taskId);
     call(args).catch(console.error);
   };
 
   return (
     <View className="flex-1 items-center justify-center">
-      <FlatList
-        data={tasks}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }: { item: Task }) => (
-          <View>
-            <Text>{`Name: ${item.name}`}</Text>
-            <Text>{`Contact Number: ${item.contactNumber}`}</Text>
-            <Text>{`Trials: ${item.trials}`}</Text>
-            <Text>{`City: ${item.city}`}</Text>
-            <Text>{`State: ${item.state}`}</Text>
-            <Text>{`ID: ${item.id}`}</Text>
-            <TouchableOpacity
-              onPress={() => handleCallPress(item.contactNumber, item.id)}
-            >
-              <Text className="text-blue-500">Call</Text>
-            </TouchableOpacity>
-            <View className="border-b border-black mb-10" />
-          </View>
-        )}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-        }
-      />
+      {tasks ? (
+        tasks.length === 0 ? (
+          <Text>No tasks available.</Text>
+        ) : (
+          <FlatList
+            data={tasks}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }: { item: Task }) => {
+              try {
+                return (
+                  <View>
+                    <Text>{`Name: ${item.name}`}</Text>
+                    <Text>{`Contact Number: ${item.contactNumber}`}</Text>
+                    <Text>{`Trials: ${item.trials}`}</Text>
+                    <Text>{`City: ${item.city}`}</Text>
+                    <Text>{`State: ${item.state}`}</Text>
+                    <Text>{`ID: ${item.id}`}</Text>
+                    <TouchableOpacity
+                      onPress={() =>
+                        handleCallPress(item.contactNumber, item.id)
+                      }
+                    >
+                      <Text className="text-blue-500">Call</Text>
+                    </TouchableOpacity>
+                    <View className="border-b border-black mb-10" />
+                  </View>
+                );
+              } catch (error) {
+                console.error("Error rendering item:", error);
+                return null; // or some fallback UI
+              }
+            }}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+              />
+            }
+          />
+        )
+      ) : (
+        <Text>Loading...</Text>
+      )}
     </View>
   );
 }
