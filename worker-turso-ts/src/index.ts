@@ -32,6 +32,8 @@ function buildLibsqlClient(env: Env): LibsqlClient {
 	return createClient({ url, authToken });
 }
 
+console.log(buildLibsqlClient);
+
 function buildRouter(env: Env): RouterType {
 	const router = Router();
 
@@ -53,24 +55,55 @@ function buildRouter(env: Env): RouterType {
 		});
 	});
 
-	//post changes to tasks table
-	router.post('call-logs', async (request) => {
-		const client = buildLibsqlClient(env);
-		const body = await request.json();
-		const rs = await client.execute({
-			sql: 'insert into callLogs (taskId, callTime, callStatus, duration) values (?, ?, ?, ?)',
-			args: [body.taskId, body.callTime, body.callStatus, body.duration],
-		});
+	router.post('/call-logs', async (request) => {
+		try {
+			const client = buildLibsqlClient(env);
+			const jsonBody = await request.json();
+			console.log('Parsed Request Body:', jsonBody);
+			const rs = await client.execute({
+				sql: 'insert into callLogs (taskId, callTime, callStatus, duration) values (?, ?, ?, ?)',
+				args: [jsonBody.taskId, jsonBody.callTime, jsonBody.callStatus, jsonBody.duration],
+			});
+
+			console.log('SQL Execution Result:', rs);
+
+			return new Response('Successfully inserted into callLogs', {
+				status: 200,
+				headers: { 'Content-Type': 'text/plain' },
+			});
+		} catch (error) {
+			console.error('Error inserting into callLogs:', error);
+			return new Response('Error inserting into callLogs', {
+				status: 500,
+				headers: { 'Content-Type': 'text/plain' },
+			});
+		}
 	});
 
-	//post changes to callLogs table
-	router.post('tasks', async (request) => {
-		const client = buildLibsqlClient(env);
-		const body = await request.json();
-		const rs = await client.execute({
-			sql: 'insert into tasks (name, contactNumber, city, state, targetCallCount) values (?, ?, ?, ?, ?)',
-			args: [body.name, body.contactNumber, body.city, body.state, body.targetCallCount],
-		});
+	router.post('/tasks', async (request) => {
+		try {
+			const client = buildLibsqlClient(env);
+			console.log(client);
+			const jsonBody = await request.json();
+			console.log('Parsed Request Body:', jsonBody);
+			const rs = await client.execute({
+				sql: 'insert into tasks (name, contactNumber, city, state, targetCallCount) values (?, ?, ?, ?, ?)',
+				args: [jsonBody.name, jsonBody.contactNumber, jsonBody.city, jsonBody.state, jsonBody.targetCallCount],
+			});
+
+			console.log('SQL Execution Result:', rs);
+
+			return new Response('Successfully inserted into tasks', {
+				status: 200,
+				headers: { 'Content-Type': 'text/plain' },
+			});
+		} catch (error) {
+			console.error('Error inserting into tasks:', error);
+			return new Response('Error inserting into tasks', {
+				status: 500,
+				headers: { 'Content-Type': 'text/plain' },
+			});
+		}
 	});
 
 	router.all('*', () => new Response('Not Found.', { status: 404 }));
