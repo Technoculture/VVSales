@@ -1,28 +1,33 @@
 import { PermissionsAndroid } from "react-native";
 import CallLogs from "react-native-call-log";
 
+import { getContactNumbers } from "../lib/db_helpers";
+
 const checkPermission = async () => {
   try {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.READ_CALL_LOG,
       {
-        title: "Call Log Example",
-        message: "Access your call logs",
+        title: "Permission to Count Calls",
+        message: "Access to Call Counts",
         buttonNeutral: "Ask Me Later",
         buttonNegative: "Cancel",
         buttonPositive: "OK",
       },
     );
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      console.log(CallLogs);
-      CallLogs.load(-1).then((c) => console.log(c));
-      //according to documentation, if this is -1, it will load all call logs, and we can apply filter based on call logs and phone numbers and map them to tasks, it will filter out call logs for potential clients only
+      const contactNumbers = await getContactNumbers();
+      const filter = {
+        phoneNumbers: contactNumbers,
+      };
+
+      // Load call logs using the filter
+      CallLogs.load(-1, filter).then((callLogs) => console.log(callLogs));
     } else {
       console.log("Call Log permission denied");
     }
   } catch (error) {
     console.error("Error checking call log permission:", error);
-    return false;
   }
 };
 

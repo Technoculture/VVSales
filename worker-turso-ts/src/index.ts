@@ -53,48 +53,6 @@ function buildRouter(env: Env): RouterType {
 		});
 	});
 
-	//fetch data from tasks table
-	router.get('/tasks/:id', async (request) => {
-		const client = buildLibsqlClient(env);
-		const id = request.params.id;
-		if (id === undefined) {
-			return new Response('Missing id', { status: 400 });
-		}
-		if (typeof id !== 'string') {
-			return new Response('id must be a single string', { status: 400 });
-		}
-		if (id.length === 0) {
-			return new Response('id length must be > 0', { status: 400 });
-		}
-
-		const rs = await client.execute({
-			sql: 'select * from tasks where id = ?',
-			args: [id],
-		});
-		return Response.json(rs);
-	});
-
-	//fetch data from callLogs table
-	router.get('/call-logs/:id', async (request) => {
-		const client = buildLibsqlClient(env);
-		const id = request.params.id;
-		if (id === undefined) {
-			return new Response('Missing id', { status: 400 });
-		}
-		if (typeof id !== 'string') {
-			return new Response('id must be a single string', { status: 400 });
-		}
-		if (id.length === 0) {
-			return new Response('id length must be > 0', { status: 400 });
-		}
-
-		const rs = await client.execute({
-			sql: 'select * from callLogs where id = ?',
-			args: [id],
-		});
-		return Response.json(rs);
-	});
-
 	//post changes to tasks table
 	router.post('call-logs', async (request) => {
 		const client = buildLibsqlClient(env);
@@ -112,27 +70,6 @@ function buildRouter(env: Env): RouterType {
 		const rs = await client.execute({
 			sql: 'insert into tasks (name, contactNumber, city, state, targetCallCount) values (?, ?, ?, ?, ?)',
 			args: [body.name, body.contactNumber, body.city, body.state, body.targetCallCount],
-		});
-	});
-
-	//update tasks table based on calls made
-	router.put('tasks/:id', async (request) => {
-		const client = buildLibsqlClient(env);
-		const id = request.params.id;
-		if (id === undefined) {
-			return new Response('Missing id', { status: 400 });
-		}
-		if (typeof id !== 'string') {
-			return new Response('id must be a single string', { status: 400 });
-		}
-		if (id.length === 0) {
-			return new Response('id length must be > 0', { status: 400 });
-		}
-
-		const body = await request.json();
-		const rs = await client.execute({
-			sql: 'update tasks set name = ?, contactNumber = ?, city = ?, state = ?, targetCallCount = ? where id = ?',
-			args: [body.name, body.contactNumber, body.city, body.state, body.targetCallCount, id],
 		});
 	});
 

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { Image } from "expo-image";
 import React, { useState, useEffect, useCallback } from "react";
 import { FlatList, TouchableOpacity, RefreshControl } from "react-native";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
@@ -22,88 +23,53 @@ export default function TabOneScreen() {
     try {
       const tasks = await getTasks();
       setTasks(tasks);
-      console.log(tasks);
     } catch (error) {
       console.error("Error fetching tasks:", error);
     }
   };
 
-  const updateTrials = async (taskId: string) => {
-    const updatedTasks = tasks.map((task) => {
-      if (task.id === taskId) {
-        return {
-          ...task,
-          trials: task.trials + 1,
-        };
-      }
-      return task;
-    });
-    setTasks(updatedTasks);
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const tasksResponse = await getTasks();
-        const callLogs = await getCallLogs();
-        const tasks = tasksResponse.rows;
-
-        // Use tasks and callLogs data as needed
-        console.log("Tasks:", tasks);
-        console.log("Call Logs:", callLogs);
-
-        // Add your logic for processing call logs and updating tasks if necessary
-
-        setTasks(tasks);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-    const intervalId = setInterval(fetchData, 5 * 60 * 1000);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
-  const postAndSyncCallLogs = async () => {
-    try {
-      const callLogs = await getCallLogs();
-      await postCallLogs(callLogs);
-      console.log("Call logs posted successfully.");
-    } catch (error) {
-      console.error("Error posting call logs:", error);
-    }
-  };
+  // const updateTrials = async (taskId: string) => {
+  //   const updatedTasks = tasks.map((task) => {
+  //     if (task.id === taskId) {
+  //       return {
+  //         ...task,
+  //         trials: task.trials + 1,
+  //       };
+  //     }
+  //     return task;
+  //   });
+  //   setTasks(updatedTasks);
+  // };
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
     await fetchTasks();
-    await postAndSyncCallLogs();
+    // await postAndSyncCallLogs();
     setRefreshing(false);
   }, []);
 
   useEffect(() => {
     fetchTasks();
     getCallLogs();
-    const intervalId = setInterval(
-      () => {
-        fetchTasks();
-      },
-      5 * 60 * 1000,
-    );
+    const intervalId = setInterval(() => {
+      fetchTasks();
+    }, 30 * 1000);
     return () => clearInterval(intervalId);
   }, []);
 
   const handleCallPress = (contactNumber: string, taskId: string) => {
-    const args = {
-      number: contactNumber,
-      prompt: false,
-    };
-    updateTrials(taskId);
-    // RNImmediatePhoneCall.immediatePhoneCall(contactNumber);
-    call(args).catch(console.error);
+    RNImmediatePhoneCall.immediatePhoneCall(contactNumber);
   };
+
+  // Uncomment the following code to use react-native-phone-call instead of react-native-immediate-phone-call
+  // const handleCallPress = (contactNumber: string, taskId: string) => {
+  // const args = {
+  //   number: contactNumber,
+  //   prompt: false,
+  // };
+  // updateTrials(taskId);
+  // call(args).catch(console.error);
+  // };
 
   return (
     <View className="flex-1 items-center justify-center">
@@ -112,25 +78,37 @@ export default function TabOneScreen() {
           <Text>No tasks available.</Text>
         ) : (
           <FlatList
+            className="w-full p-4"
             data={tasks.rows}
             keyExtractor={(item) => item[0].toString()}
             renderItem={({ item }: { item: Task[] }) => {
               const task = item;
               try {
                 return (
-                  <View>
-                    <Text>{`Name: ${task[1]}`}</Text>
-                    <Text>{`Contact Number: ${task[2]}`}</Text>
-                    <Text>{`Trials: ${task[5]}`}</Text>
-                    <Text>{`City: ${task[3]}`}</Text>
-                    <Text>{`State: ${task[4]}`}</Text>
-                    <Text>{`ID: ${task[0]}`}</Text>
+                  <View className="flex-row items-center w-full p-4 border-b border-black">
+                    <View className="flex-1">
+                      <Text className="text-xl font-bold mb-2">{`Name: ${task[1]}`}</Text>
+                      <Text>{`Trials: ${task[5]}`}</Text>
+                      <View className="flex-row">
+                        <Text>{`City: ${task[3]}`}</Text>
+                        <Text className="mx-2">|</Text>
+                        <Text>{`State: ${task[4]}`}</Text>
+                      </View>
+                      <Text className="mt-2 font-bold">{`Contact Number: ${task[2]}`}</Text>
+                      {/* <Text>{`ID: ${task[0]}`}</Text> */}
+                    </View>
                     <TouchableOpacity
+                      className="p-2 ml-auto"
                       onPress={() => handleCallPress(task[2], task[0])}
                     >
-                      <Text className="text-blue-500">Call</Text>
+                      {/* <Text className="text-blue-500">Call</Text> */}
+                      <Image
+                        className="w-10 h-10"
+                        source={require("../../assets/images/call-icon.png")}
+                        contentFit="cover"
+                        transition={1000}
+                      />
                     </TouchableOpacity>
-                    <View className="border-b border-black mb-10" />
                   </View>
                 );
               } catch (error) {
