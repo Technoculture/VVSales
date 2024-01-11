@@ -1,7 +1,6 @@
 import CallLogs from "react-native-call-log";
 
 import { checkPermission } from "../lib/permissions";
-// const API_URL = process.env.API_URL;
 
 const getContactNumbers = async () => {
   try {
@@ -41,8 +40,18 @@ const getTasks = async () => {
     console.error("Error fetching tasks:", error);
   }
 };
+
 const postCallLogs = async (callLogs: any) => {
   try {
+    const formattedCallLogs = callLogs.map((log: any) => {
+      return {
+        taskId: log.taskId,
+        callTime: log.timestamp,
+        callStatus: log.callType,
+        duration: log.duration,
+      };
+    });
+
     const response = await fetch(
       "https://worker-turso-ts.technoculture.workers.dev/call-logs",
       {
@@ -50,32 +59,38 @@ const postCallLogs = async (callLogs: any) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(callLogs),
+        body: JSON.stringify(formattedCallLogs),
       },
     );
+
     console.log("Call logs posted successfully:", response);
     return response;
   } catch (error) {
     console.error("Error posting call logs:", error);
   }
 };
-const sync = async () => {
+
+const updateTask = async (taskId: number) => {
   try {
-    if (!(await checkPermission())) return [];
-    const callLogs = await getCallLogs();
-    const tasks = await getTasks();
-    const callLogsToPost = callLogs.filter((log: any) => {
-      return tasks.some((task: any) => {
-        return task.contactNumber === log.phoneNumber;
-        //what is this?
-      });
-    });
-    await postCallLogs(callLogsToPost);
-    return tasks;
+    const response = await fetch(
+      `https://worker-turso-ts.technoculture.workers.dev/tasks/${taskId}`,
+    );
+    const task = await response.json();
+    task.targetCallCount = Math.max(task.targetCallCount - 1, 0);
+    await fetch(
+      `https://worker-turso-ts.technoculture.workers.dev/tasks/${taskId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(task),
+      },
+    );
+    console.log("Task updated successfully:", task);
   } catch (error) {
-    console.error("Error syncing:", error);
-    return [];
+    console.error("Error updating task:", error);
   }
 };
 
-export { getCallLogs, getTasks, sync, postCallLogs, getContactNumbers };
+export { getCallLogs, getTasks, postCallLogs, getContactNumbers, updateTask };

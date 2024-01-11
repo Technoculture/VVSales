@@ -9,9 +9,9 @@ import call from "react-native-phone-call";
 import { Text, View } from "../../components/Themed";
 import {
   getTasks,
-  sync,
   getCallLogs,
   postCallLogs,
+  updateTask,
 } from "../../lib/db_helpers";
 import { Task } from "../../lib/types";
 
@@ -27,19 +27,6 @@ export default function TabOneScreen() {
       console.error("Error fetching tasks:", error);
     }
   };
-
-  // const updateTrials = async (taskId: string) => {
-  //   const updatedTasks = tasks.map((task) => {
-  //     if (task.id === taskId) {
-  //       return {
-  //         ...task,
-  //         trials: task.trials + 1,
-  //       };
-  //     }
-  //     return task;
-  //   });
-  //   setTasks(updatedTasks);
-  // };
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -57,8 +44,13 @@ export default function TabOneScreen() {
     return () => clearInterval(intervalId);
   }, []);
 
-  const handleCallPress = (contactNumber: string, taskId: string) => {
-    RNImmediatePhoneCall.immediatePhoneCall(contactNumber);
+  const handleCallPress = async (contactNumber: string, taskId: number) => {
+    try {
+      await updateTask(taskId);
+      RNImmediatePhoneCall.immediatePhoneCall(contactNumber);
+    } catch (error) {
+      console.error("Error handling call press:", error);
+    }
   };
 
   // Uncomment the following code to use react-native-phone-call instead of react-native-immediate-phone-call

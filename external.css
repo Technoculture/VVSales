@@ -1,0 +1,31 @@
+ h1 {
+     color: brown;
+     font-size: 66px;
+     font-family: cursive;
+     background-color: yellow;
+ }
+
+ /*idname*/
+ #a {
+     color: green;
+     font-size: 66px;
+     font-family: cursive;
+     background-color: violet;
+ }
+
+ h1#b {
+     font-size: 100px;
+     font-family: fantasy;
+     background: red;
+     color: white;
+ }
+
+ .myclass {
+     color: navy;
+     font-family: fantasy;
+     font-size: 55px;
+ }
+
+ .myclass1 {
+     background-color: orange;
+ }
