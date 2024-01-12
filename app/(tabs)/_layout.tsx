@@ -37,8 +37,9 @@ export default function TabLayout() {
                     name="info-circle"
                     size={25}
                     color={Colors[colorScheme ?? "light"].text}
-                    className={`mr-15 ${pressed ? "opacity-50" : "opacity-100"
-                      }`}
+                    className={`mr-15 ${
+                      pressed ? "opacity-50" : "opacity-100"
+                    }`}
                   />
                 )}
               </Pressable>

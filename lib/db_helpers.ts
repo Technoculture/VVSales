@@ -8,7 +8,12 @@ const getContactNumbers = async () => {
       "https://worker-turso-ts.technoculture.workers.dev/tasks",
     );
     const tasks = await response.json();
+
     const contactNumbers = tasks.map((task: any) => task.contactNumber);
+
+    console.log("Fetched tasks:", tasks);
+    console.log("Extracted contact numbers:", contactNumbers);
+
     return contactNumbers;
   } catch (error) {
     console.error("Error fetching contact numbers:", error);

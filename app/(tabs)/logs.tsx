@@ -1,16 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { FlatList, PermissionsAndroid } from "react-native";
 import CallLogs from "react-native-call-log";
 
 import { Text, View } from "../../components/Themed";
-
-interface CallLogItem {
-  //add task id
-  phoneNumber: string;
-  callType: string;
-  callDate: string;
-  callDuration: string;
-}
+import { checkPermission, loadCallLogs } from "../../lib/permissions";
+import { CallLogItem } from "../../lib/types";
 
 export default function TabTwoScreen() {
   const [callLogs, setCallLogs] = useState<CallLogItem[]>([]);
@@ -18,40 +13,23 @@ export default function TabTwoScreen() {
   useEffect(() => {
     const fetchCallLogs = async () => {
       try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.READ_CALL_LOG,
-          {
-            title: "Call Log Example",
-            message: "Access your call logs",
-            buttonNeutral: "Ask Me Later",
-            buttonNegative: "Cancel",
-            buttonPositive: "OK",
-          },
-        );
+        await checkPermission();
 
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          //if this is working, import permissions from permissions.ts file and use it here,try filtering the call logs by tasks fetched from db and pass this to post request to database
-          CallLogs.load(50).then((logs) => {
-            console.log("Call logs:", logs);
+        // Load call logs based on filter
+        const logs = await loadCallLogs();
+        console.log("Call logs:", logs);
 
-            const formattedLogs: CallLogItem[] = logs.map((log) => {
-              // Log the entire 'log' object to inspect its structure
-              console.log("Call log structure:", log);
+        const formattedLogs: CallLogItem[] = logs.map((log) => {
+          return {
+            phoneNumber: log.phoneNumber,
+            callType: log.callType,
+            callDate: new Date(log.timestamp).toLocaleString(),
+            callDuration: log.duration,
+          };
+        });
 
-              return {
-                phoneNumber: log.phoneNumber,
-                callType: log.callType,
-                callDate: new Date(log.timestamp).toLocaleString(),
-                callDuration: log.duration,
-              };
-            });
-
-            console.log("Formatted logs:", formattedLogs);
-            setCallLogs(formattedLogs);
-          });
-        } else {
-          console.log("Call Log permission denied");
-        }
+        console.log("Formatted logs:", formattedLogs);
+        setCallLogs(formattedLogs);
       } catch (e) {
         console.error("Error fetching call logs:", e);
       }

@@ -4,11 +4,18 @@ import CallLogs from "react-native-call-log";
 import { getContactNumbers } from "../lib/db_helpers";
 
 const loadCallLogs = async () => {
-  const contactNumbers = await getContactNumbers();
-  const filter = {
-    phoneNumbers: contactNumbers,
-  };
-  CallLogs.load(-1, filter).then((callLogs) => console.log(callLogs));
+  try {
+    const contactNumbers = await getContactNumbers();
+    const filter = {
+      phoneNumbers: contactNumbers,
+    };
+    const callLogs = await CallLogs.load(-1, filter);
+    console.log(callLogs);
+    return callLogs;
+  } catch (error) {
+    console.error("Error loading call logs:", error);
+    throw error;
+  }
 };
 
 const checkPermission = async () => {

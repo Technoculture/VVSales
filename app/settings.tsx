@@ -70,4 +70,4 @@ const ModalScreen: React.FC = () => {
 };
 
 export default ModalScreen;
-export const phoneNumber = ModalScreen.phoneNumber;
+// export const phoneNumber = ModalScreen.phoneNumber;

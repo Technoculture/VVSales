@@ -26,3 +26,10 @@ export interface Task {
   city: string;
   state: string;
 }
+
+export interface CallLogItem {
+  phoneNumber: string;
+  callType: string;
+  callDate: string;
+  callDuration: string;
+}
