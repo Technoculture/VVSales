@@ -2,7 +2,6 @@
 import { Image } from "expo-image";
 import React, { useState, useEffect, useCallback } from "react";
 import { FlatList, TouchableOpacity, RefreshControl } from "react-native";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import RNImmediatePhoneCall from "react-native-immediate-phone-call";
 import call from "react-native-phone-call";
 

@@ -30,21 +30,27 @@ export default function TabLayout() {
           title: "Tasks",
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           headerRight: () => (
-            <Link href="/settings" asChild>
+            <Link href="/inbox" asChild>
               <Pressable>
                 {({ pressed }) => (
                   <FontAwesome
                     name="info-circle"
                     size={25}
                     color={Colors[colorScheme ?? "light"].text}
-                    className={`mr-15 ${
-                      pressed ? "opacity-50" : "opacity-100"
-                    }`}
+                    className={`mr-15 ${pressed ? "opacity-50" : "opacity-100"
+                      }`}
                   />
                 )}
               </Pressable>
             </Link>
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="logs"
+        options={{
+          title: "Logs",
+          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />
     </Tabs>
