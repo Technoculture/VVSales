@@ -1,6 +1,6 @@
 import CallLogs from "react-native-call-log";
 
-import { checkPermission } from "../lib/permissions";
+import { checkPermission, loadCallLogs } from "../lib/permissions";
 
 const getContactNumbers = async () => {
   try {
@@ -8,8 +8,6 @@ const getContactNumbers = async () => {
       "https://worker-turso-ts.technoculture.workers.dev/tasks",
     );
     const tasks = await response.json();
-    console.log("Tasks fetched successfully", tasks);
-
     const contactNumbers = tasks.map((task: any) => task.contactNumber);
     return contactNumbers;
   } catch (error) {
@@ -20,15 +18,16 @@ const getContactNumbers = async () => {
 
 const getCallLogs = async () => {
   try {
-    if (!(await checkPermission())) return [];
+    await checkPermission();
+    await loadCallLogs();
     const callLogs = await CallLogs.loadAll();
-    console.log("Call logs fetched successfully", callLogs);
+    console.log("Call logs fetched successfully:", callLogs);
     return callLogs;
   } catch (error) {
     console.error("Error fetching call logs:", error);
-    return [];
   }
 };
+
 const getTasks = async () => {
   try {
     const response = await fetch(
@@ -43,15 +42,6 @@ const getTasks = async () => {
 
 const postCallLogs = async (callLogs: any) => {
   try {
-    const formattedCallLogs = callLogs.map((log: any) => {
-      return {
-        taskId: log.taskId,
-        callTime: log.timestamp,
-        callStatus: log.callType,
-        duration: log.duration,
-      };
-    });
-
     const response = await fetch(
       "https://worker-turso-ts.technoculture.workers.dev/call-logs",
       {
@@ -59,12 +49,10 @@ const postCallLogs = async (callLogs: any) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formattedCallLogs),
+        body: JSON.stringify(callLogs),
       },
     );
-
     console.log("Call logs posted successfully:", response);
-    return response;
   } catch (error) {
     console.error("Error posting call logs:", error);
   }
@@ -93,4 +81,28 @@ const updateTask = async (taskId: number) => {
   }
 };
 
-export { getCallLogs, getTasks, postCallLogs, getContactNumbers, updateTask };
+const sync = async () => {
+  try {
+    const callLogs = await getCallLogs();
+    await postCallLogs(callLogs);
+    const tasks = await getTasks();
+    const contactNumbers = await getContactNumbers();
+    const tasksToBeUpdated = tasks.filter((task: any) =>
+      contactNumbers.includes(task.contactNumber),
+    );
+    for (const task of tasksToBeUpdated) {
+      await updateTask(task.id);
+    }
+  } catch (error) {
+    console.error("Error syncing:", error);
+  }
+};
+
+export {
+  getCallLogs,
+  getTasks,
+  postCallLogs,
+  getContactNumbers,
+  updateTask,
+  sync,
+};

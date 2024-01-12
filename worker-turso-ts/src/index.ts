@@ -37,6 +37,8 @@ console.log(buildLibsqlClient);
 function buildRouter(env: Env): RouterType {
 	const router = Router();
 
+	//add user endpoint to url so that we can use the same worker for multiple users
+	//fetch user from settings page
 	router.get('/tasks', async () => {
 		const client = buildLibsqlClient(env);
 		const rs = await client.execute('select * from tasks');
@@ -58,8 +60,21 @@ function buildRouter(env: Env): RouterType {
 	router.post('/call-logs', async (request) => {
 		try {
 			const client = buildLibsqlClient(env);
+			const contentType = request.headers.get('content-type');
+
+			if (!contentType || contentType.indexOf('application/json') !== 0) {
+				// Ensure the request has the correct content type
+				throw new Error('Invalid content type. Expected application/json.');
+			}
+
 			const jsonBody = await request.json();
+
+			if (!jsonBody || typeof jsonBody !== 'object') {
+				throw new Error('Invalid JSON format in the request body.');
+			}
+
 			console.log('Parsed Request Body:', jsonBody);
+
 			const rs = await client.execute({
 				sql: 'insert into callLogs (taskId, callTime, callStatus, duration) values (?, ?, ?, ?)',
 				args: [jsonBody.taskId, jsonBody.callTime, jsonBody.callStatus, jsonBody.duration],

@@ -3,6 +3,14 @@ import CallLogs from "react-native-call-log";
 
 import { getContactNumbers } from "../lib/db_helpers";
 
+const loadCallLogs = async () => {
+  const contactNumbers = await getContactNumbers();
+  const filter = {
+    phoneNumbers: contactNumbers,
+  };
+  CallLogs.load(-1, filter).then((callLogs) => console.log(callLogs));
+};
+
 const checkPermission = async () => {
   try {
     const granted = await PermissionsAndroid.request(
@@ -16,13 +24,8 @@ const checkPermission = async () => {
       },
     );
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      const contactNumbers = await getContactNumbers();
-      const filter = {
-        phoneNumbers: contactNumbers,
-      };
-
-      // Load call logs using the filter
-      CallLogs.load(-1, filter).then((callLogs) => console.log(callLogs));
+      console.log("Call Log permission granted");
+      loadCallLogs();
     } else {
       console.log("Call Log permission denied");
     }
@@ -31,4 +34,4 @@ const checkPermission = async () => {
   }
 };
 
-export { checkPermission };
+export { checkPermission, loadCallLogs };

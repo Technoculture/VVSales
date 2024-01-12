@@ -12,6 +12,7 @@ import {
   getCallLogs,
   postCallLogs,
   updateTask,
+  sync,
 } from "../../lib/db_helpers";
 import { Task } from "../../lib/types";
 
@@ -31,13 +32,13 @@ export default function TabOneScreen() {
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
     await fetchTasks();
-    // await postAndSyncCallLogs();
     setRefreshing(false);
   }, []);
 
   useEffect(() => {
     fetchTasks();
     getCallLogs();
+    sync();
     const intervalId = setInterval(() => {
       fetchTasks();
     }, 30 * 1000);
