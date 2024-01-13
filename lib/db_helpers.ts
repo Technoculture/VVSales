@@ -49,17 +49,31 @@ const getCallLogs = async () => {
 
 const postCallLogs = async (callLogs: any) => {
   try {
-    const response = await fetch(
-      "https://worker-turso-ts.technoculture.workers.dev/call-logs",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(callLogs),
-      },
+    // Check if the post has already been made for the current day
+    const currentDate = new Date();
+    const currentDateString = currentDate.toISOString().split("T")[0];
+
+    const responseCheck = await fetch(
+      `https://worker-turso-ts.technoculture.workers.dev/call-logs?date=${currentDateString}`,
     );
-    console.log("Call logs posted successfully:", response);
+
+    const existingLogs = await responseCheck.json();
+
+    if (existingLogs.rows.length === 0) {
+      const response = await fetch(
+        "https://worker-turso-ts.technoculture.workers.dev/call-logs",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(callLogs),
+        },
+      );
+      console.log("Call logs posted successfully:", response);
+    } else {
+      console.log("Call logs already posted for today.");
+    }
   } catch (error) {
     console.error("Error posting call logs:", error);
   }

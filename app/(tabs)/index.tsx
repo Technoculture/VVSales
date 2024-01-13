@@ -48,7 +48,7 @@ export default function TabOneScreen() {
   const handleCallPress = async (contactNumber: string, taskId: number) => {
     try {
       await updateTask(taskId);
-      console.log(contactNumber);
+      await fetchTasks();
       RNImmediatePhoneCall.immediatePhoneCall(contactNumber);
     } catch (error) {
       console.error("Error handling call press:", error);

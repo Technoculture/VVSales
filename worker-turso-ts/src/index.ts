@@ -37,33 +37,31 @@ console.log(buildLibsqlClient);
 function buildRouter(env: Env): RouterType {
 	const router = Router();
 
-	//add user endpoint to url so that we can use the same worker for multiple users
-	//fetch user from settings page
+	// Fetch tasks
 	router.get('/tasks', async () => {
 		const client = buildLibsqlClient(env);
 		const rs = await client.execute('select * from tasks');
-		// return Response.json(rs);
 		return new Response(JSON.stringify(rs), {
 			headers: { 'content-type': 'application/json' },
 		});
 	});
 
+	// Fetch call logs
 	router.get('/call-logs', async () => {
 		const client = buildLibsqlClient(env);
 		const rs = await client.execute('select * from callLogs');
-		// return Response.json(rs);
 		return new Response(JSON.stringify(rs), {
 			headers: { 'content-type': 'application/json' },
 		});
 	});
 
+	// Insert call logs
 	router.post('/call-logs', async (request) => {
 		try {
 			const client = buildLibsqlClient(env);
 			const contentType = request.headers.get('content-type');
 
 			if (!contentType || contentType.indexOf('application/json') !== 0) {
-				// Ensure the request has the correct content type
 				throw new Error('Invalid content type. Expected application/json.');
 			}
 
@@ -83,62 +81,20 @@ function buildRouter(env: Env): RouterType {
 
 			if (tasks.rows.length > 0) {
 				// Phone number exists in tasks, proceed with insertion
+				const taskId = tasks.rows[0].id;
+
+				// Decrease trials by 1 for the corresponding task
+				const updateTaskResponse = await client.execute({
+					sql: 'update tasks set targetCallCount = targetCallCount - 1 where id = ?',
+					args: [taskId],
+				});
+
+				console.log('Task trials updated:', updateTaskResponse);
+
+				// Continue with callLogs insertion
 				const rs = await client.execute({
-					sql: 'insert into callLogs (taskId, callTime, callStatus, duration) values (?, ?, ?, ?)',
-					args: [jsonBody.taskId, jsonBody.callTime, jsonBody.callStatus, jsonBody.duration],
-				});
-
-				console.log('SQL Execution Result:', rs);
-
-				return new Response('Successfully inserted into callLogs', {
-					status: 200,
-					headers: { 'Content-Type': 'text/plain' },
-				});
-			} else {
-				// Phone number not found in tasks, skip insertion
-				console.log('Phone number not found in tasks. Skipping insertion.');
-				return new Response('Phone number not found in tasks. Skipping insertion.', {
-					status: 400,
-					headers: { 'Content-Type': 'text/plain' },
-				});
-			}
-		} catch (error) {
-			console.error('Error inserting into callLogs:', error);
-			return new Response('Error inserting into callLogs', {
-				status: 500,
-				headers: { 'Content-Type': 'text/plain' },
-			});
-		}
-	});
-	router.post('/call-logs', async (request) => {
-		try {
-			const client = buildLibsqlClient(env);
-			const contentType = request.headers.get('content-type');
-
-			if (!contentType || contentType.indexOf('application/json') !== 0) {
-				// Ensure the request has the correct content type
-				throw new Error('Invalid content type. Expected application/json.');
-			}
-
-			const jsonBody = await request.json();
-
-			if (!jsonBody || typeof jsonBody !== 'object') {
-				throw new Error('Invalid JSON format in the request body.');
-			}
-
-			console.log('Parsed Request Body:', jsonBody);
-
-			// Check if the contactNumber exists in tasks
-			const tasks = await client.execute({
-				sql: 'select * from tasks where contactNumber = ?',
-				args: [jsonBody.contactNumber],
-			});
-
-			if (tasks.rows.length > 0) {
-				// Phone number exists in tasks, proceed with insertion
-				const rs = await client.execute({
-					sql: 'insert into callLogs (taskId, callTime, callStatus, duration) values (?, ?, ?, ?)',
-					args: [jsonBody.taskId, jsonBody.callTime, jsonBody.callStatus, jsonBody.duration],
+					sql: 'insert into callLogs (taskId, contactNumber, duration) values (?, ?, ?)',
+					args: [jsonBody.taskId, jsonBody.contactNumber, jsonBody.duration],
 				});
 
 				console.log('SQL Execution Result:', rs);
@@ -164,10 +120,10 @@ function buildRouter(env: Env): RouterType {
 		}
 	});
 
+	// Insert tasks
 	router.post('/tasks', async (request) => {
 		try {
 			const client = buildLibsqlClient(env);
-			console.log(client);
 			const jsonBody = await request.json();
 			console.log('Parsed Request Body:', jsonBody);
 			const rs = await client.execute({
@@ -190,6 +146,7 @@ function buildRouter(env: Env): RouterType {
 		}
 	});
 
+	// 404 - Not Found
 	router.all('*', () => new Response('Not Found.', { status: 404 }));
 
 	return router;

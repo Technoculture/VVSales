@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useEffect, useState } from "react";
-import { FlatList } from "react-native";
+import React, { useEffect, useState, useCallback } from "react";
+import { FlatList, RefreshControl } from "react-native";
 
 import { Text, View } from "../../components/Themed";
 import { getContactNumbers } from "../../lib/db_helpers";
@@ -9,36 +9,58 @@ import { CallLogItem } from "../../lib/types";
 
 export default function TabTwoScreen() {
   const [callLogs, setCallLogs] = useState<CallLogItem[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const formatCallDuration = (durationInSeconds: number) => {
+    const hours = Math.floor(durationInSeconds / 3600);
+    const minutes = Math.floor((durationInSeconds % 3600) / 60);
+    const seconds = durationInSeconds % 60;
+
+    return `${hours > 0 ? hours + "h " : ""}${
+      minutes > 0 ? minutes + "m " : ""
+    }${seconds}s`;
+  };
+
+  const fetchCallLogs = async () => {
+    try {
+      await checkPermission();
+      const logs = await loadCallLogs();
+      const contactNumbers = await getContactNumbers();
+      const filteredLogs = logs.filter((log) =>
+        contactNumbers.includes(log.phoneNumber),
+      );
+
+      console.log("Filtered logs:", filteredLogs);
+
+      const formattedLogs: CallLogItem[] = filteredLogs.map((log) => {
+        return {
+          phoneNumber: log.phoneNumber,
+          callType: log.callType,
+          callDate: new Date(log.timestamp).toLocaleString(),
+          callDuration: formatCallDuration(log.duration),
+        };
+      });
+
+      console.log("Formatted logs:", formattedLogs);
+      setCallLogs(formattedLogs);
+    } catch (e) {
+      console.error("Error fetching call logs:", e);
+    }
+  };
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchCallLogs();
+    setRefreshing(false);
+  }, []);
 
   useEffect(() => {
-    const fetchCallLogs = async () => {
-      try {
-        await checkPermission();
-        const logs = await loadCallLogs();
-        const contactNumbers = await getContactNumbers();
-        const filteredLogs = logs.filter((log) =>
-          contactNumbers.includes(log.phoneNumber),
-        );
-
-        console.log("Filtered logs:", filteredLogs);
-
-        const formattedLogs: CallLogItem[] = filteredLogs.map((log) => {
-          return {
-            phoneNumber: log.phoneNumber,
-            callType: log.callType,
-            callDate: new Date(log.timestamp).toLocaleString(),
-            callDuration: log.duration,
-          };
-        });
-
-        console.log("Formatted logs:", formattedLogs);
-        setCallLogs(formattedLogs);
-      } catch (e) {
-        console.error("Error fetching call logs:", e);
-      }
-    };
-
     fetchCallLogs();
+    const intervalId = setInterval(() => {
+      fetchCallLogs();
+    }, 30 * 1000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
@@ -62,6 +84,9 @@ export default function TabTwoScreen() {
             <View className="border-b border-black mb-10" />
           </View>
         )}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }
       />
     </View>
   );
