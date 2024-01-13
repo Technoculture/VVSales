@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from "react";
-import { FlatList, PermissionsAndroid } from "react-native";
-import CallLogs from "react-native-call-log";
+import { FlatList } from "react-native";
 
 import { Text, View } from "../../components/Themed";
+import { getContactNumbers } from "../../lib/db_helpers";
 import { checkPermission, loadCallLogs } from "../../lib/permissions";
 import { CallLogItem } from "../../lib/types";
 
@@ -14,12 +14,15 @@ export default function TabTwoScreen() {
     const fetchCallLogs = async () => {
       try {
         await checkPermission();
-
-        // Load call logs based on filter
         const logs = await loadCallLogs();
-        console.log("Call logs:", logs);
+        const contactNumbers = await getContactNumbers();
+        const filteredLogs = logs.filter((log) =>
+          contactNumbers.includes(log.phoneNumber),
+        );
 
-        const formattedLogs: CallLogItem[] = logs.map((log) => {
+        console.log("Filtered logs:", filteredLogs);
+
+        const formattedLogs: CallLogItem[] = filteredLogs.map((log) => {
           return {
             phoneNumber: log.phoneNumber,
             callType: log.callType,
@@ -35,7 +38,6 @@ export default function TabTwoScreen() {
       }
     };
 
-    // Fetch call logs when the component mounts
     fetchCallLogs();
   }, []);
 

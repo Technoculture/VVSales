@@ -2,18 +2,6 @@ import CallLogs from "react-native-call-log";
 
 import { checkPermission, loadCallLogs } from "../lib/permissions";
 
-const getCallLogs = async () => {
-  try {
-    await checkPermission();
-    await loadCallLogs();
-    const callLogs = await CallLogs.loadAll();
-    console.log("Call logs fetched successfully:", callLogs);
-    return callLogs;
-  } catch (error) {
-    console.error("Error fetching call logs:", error);
-  }
-};
-
 const getTasks = async () => {
   try {
     const response = await fetch(
@@ -31,7 +19,7 @@ const getContactNumbers = async () => {
     const tasks = await getTasks();
 
     if (Array.isArray(tasks.rows)) {
-      const contactNumbers = tasks.rows.map((task: any) => task[2]); // Assuming contact number is at index 2
+      const contactNumbers = tasks.rows.map((task: any) => task[2]);
       console.log("Contact numbers fetched successfully:", contactNumbers);
       return contactNumbers;
     } else {
@@ -44,6 +32,18 @@ const getContactNumbers = async () => {
   } catch (error) {
     console.error("Error fetching contact numbers:", error);
     return [];
+  }
+};
+
+const getCallLogs = async () => {
+  try {
+    await checkPermission();
+    await loadCallLogs();
+    const callLogs = await CallLogs.loadAll();
+    console.log("Call logs fetched successfully:", callLogs);
+    return callLogs;
+  } catch (error) {
+    console.error("Error fetching call logs:", error);
   }
 };
 
