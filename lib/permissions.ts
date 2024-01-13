@@ -10,7 +10,7 @@ const loadCallLogs = async () => {
       phoneNumbers: contactNumbers,
     };
     const callLogs = await CallLogs.load(-1, filter);
-    console.log(callLogs);
+    console.log("Filtered call logs:", callLogs);
     return callLogs;
   } catch (error) {
     console.error("Error loading call logs:", error);
@@ -32,12 +32,14 @@ const checkPermission = async () => {
     );
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
       console.log("Call Log permission granted");
-      loadCallLogs();
+      return loadCallLogs();
     } else {
       console.log("Call Log permission denied");
+      return [];
     }
   } catch (error) {
     console.error("Error checking call log permission:", error);
+    throw error;
   }
 };
 

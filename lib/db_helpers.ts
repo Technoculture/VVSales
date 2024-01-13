@@ -4,14 +4,15 @@ import { checkPermission, loadCallLogs } from "../lib/permissions";
 
 const getContactNumbers = async () => {
   try {
+    console.log("Fetching tasks...");
     const response = await fetch(
       "https://worker-turso-ts.technoculture.workers.dev/tasks",
     );
     const tasks = await response.json();
 
-    const contactNumbers = tasks.map((task: any) => task.contactNumber);
-
     console.log("Fetched tasks:", tasks);
+
+    const contactNumbers = tasks.map((task: any) => task.contactNumber);
     console.log("Extracted contact numbers:", contactNumbers);
 
     return contactNumbers;

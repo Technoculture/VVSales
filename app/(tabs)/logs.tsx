@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from "react";
-import { FlatList, PermissionsAndroid } from "react-native";
-import CallLogs from "react-native-call-log";
+import { FlatList } from "react-native";
 
 import { Text, View } from "../../components/Themed";
 import { checkPermission, loadCallLogs } from "../../lib/permissions";
@@ -13,12 +12,7 @@ export default function TabTwoScreen() {
   useEffect(() => {
     const fetchCallLogs = async () => {
       try {
-        await checkPermission();
-
-        // Load call logs based on filter
-        const logs = await loadCallLogs();
-        console.log("Call logs:", logs);
-
+        const logs = await checkPermission();
         const formattedLogs: CallLogItem[] = logs.map((log) => {
           return {
             phoneNumber: log.phoneNumber,
