@@ -10,7 +10,6 @@ const loadCallLogs = async () => {
       phoneNumbers: contactNumbers,
     };
     const callLogs = await CallLogs.load(-1, filter);
-    console.log("Filtered call logs:", callLogs);
     return callLogs;
   } catch (error) {
     console.error("Error loading call logs:", error);

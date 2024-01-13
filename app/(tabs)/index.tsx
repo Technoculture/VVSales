@@ -11,6 +11,7 @@ import {
   getCallLogs,
   postCallLogs,
   updateTask,
+  getContactNumbers,
   sync,
 } from "../../lib/db_helpers";
 import { Task } from "../../lib/types";
@@ -31,13 +32,13 @@ export default function TabOneScreen() {
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
     await fetchTasks();
+    const contactNumbers = await getContactNumbers();
+    console.log("Contact Numbers:", contactNumbers);
     setRefreshing(false);
   }, []);
-
   useEffect(() => {
     fetchTasks();
-    getCallLogs();
-    sync();
+    getContactNumbers();
     const intervalId = setInterval(() => {
       fetchTasks();
     }, 30 * 1000);
@@ -47,6 +48,7 @@ export default function TabOneScreen() {
   const handleCallPress = async (contactNumber: string, taskId: number) => {
     try {
       await updateTask(taskId);
+      console.log(contactNumber);
       RNImmediatePhoneCall.immediatePhoneCall(contactNumber);
     } catch (error) {
       console.error("Error handling call press:", error);

@@ -75,17 +75,86 @@ function buildRouter(env: Env): RouterType {
 
 			console.log('Parsed Request Body:', jsonBody);
 
-			const rs = await client.execute({
-				sql: 'insert into callLogs (taskId, callTime, callStatus, duration) values (?, ?, ?, ?)',
-				args: [jsonBody.taskId, jsonBody.callTime, jsonBody.callStatus, jsonBody.duration],
+			// Check if the contactNumber exists in tasks
+			const tasks = await client.execute({
+				sql: 'select * from tasks where contactNumber = ?',
+				args: [jsonBody.contactNumber],
 			});
 
-			console.log('SQL Execution Result:', rs);
+			if (tasks.rows.length > 0) {
+				// Phone number exists in tasks, proceed with insertion
+				const rs = await client.execute({
+					sql: 'insert into callLogs (taskId, callTime, callStatus, duration) values (?, ?, ?, ?)',
+					args: [jsonBody.taskId, jsonBody.callTime, jsonBody.callStatus, jsonBody.duration],
+				});
 
-			return new Response('Successfully inserted into callLogs', {
-				status: 200,
+				console.log('SQL Execution Result:', rs);
+
+				return new Response('Successfully inserted into callLogs', {
+					status: 200,
+					headers: { 'Content-Type': 'text/plain' },
+				});
+			} else {
+				// Phone number not found in tasks, skip insertion
+				console.log('Phone number not found in tasks. Skipping insertion.');
+				return new Response('Phone number not found in tasks. Skipping insertion.', {
+					status: 400,
+					headers: { 'Content-Type': 'text/plain' },
+				});
+			}
+		} catch (error) {
+			console.error('Error inserting into callLogs:', error);
+			return new Response('Error inserting into callLogs', {
+				status: 500,
 				headers: { 'Content-Type': 'text/plain' },
 			});
+		}
+	});
+	router.post('/call-logs', async (request) => {
+		try {
+			const client = buildLibsqlClient(env);
+			const contentType = request.headers.get('content-type');
+
+			if (!contentType || contentType.indexOf('application/json') !== 0) {
+				// Ensure the request has the correct content type
+				throw new Error('Invalid content type. Expected application/json.');
+			}
+
+			const jsonBody = await request.json();
+
+			if (!jsonBody || typeof jsonBody !== 'object') {
+				throw new Error('Invalid JSON format in the request body.');
+			}
+
+			console.log('Parsed Request Body:', jsonBody);
+
+			// Check if the contactNumber exists in tasks
+			const tasks = await client.execute({
+				sql: 'select * from tasks where contactNumber = ?',
+				args: [jsonBody.contactNumber],
+			});
+
+			if (tasks.rows.length > 0) {
+				// Phone number exists in tasks, proceed with insertion
+				const rs = await client.execute({
+					sql: 'insert into callLogs (taskId, callTime, callStatus, duration) values (?, ?, ?, ?)',
+					args: [jsonBody.taskId, jsonBody.callTime, jsonBody.callStatus, jsonBody.duration],
+				});
+
+				console.log('SQL Execution Result:', rs);
+
+				return new Response('Successfully inserted into callLogs', {
+					status: 200,
+					headers: { 'Content-Type': 'text/plain' },
+				});
+			} else {
+				// Phone number not found in tasks, skip insertion
+				console.log('Phone number not found in tasks. Skipping insertion.');
+				return new Response('Phone number not found in tasks. Skipping insertion.', {
+					status: 400,
+					headers: { 'Content-Type': 'text/plain' },
+				});
+			}
 		} catch (error) {
 			console.error('Error inserting into callLogs:', error);
 			return new Response('Error inserting into callLogs', {

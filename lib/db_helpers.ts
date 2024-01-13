@@ -2,26 +2,6 @@ import CallLogs from "react-native-call-log";
 
 import { checkPermission, loadCallLogs } from "../lib/permissions";
 
-const getContactNumbers = async () => {
-  try {
-    console.log("Fetching tasks...");
-    const response = await fetch(
-      "https://worker-turso-ts.technoculture.workers.dev/tasks",
-    );
-    const tasks = await response.json();
-
-    console.log("Fetched tasks:", tasks);
-
-    const contactNumbers = tasks.map((task: any) => task.contactNumber);
-    console.log("Extracted contact numbers:", contactNumbers);
-
-    return contactNumbers;
-  } catch (error) {
-    console.error("Error fetching contact numbers:", error);
-    return [];
-  }
-};
-
 const getCallLogs = async () => {
   try {
     await checkPermission();
@@ -43,6 +23,27 @@ const getTasks = async () => {
     return tasks;
   } catch (error) {
     console.error("Error fetching tasks:", error);
+  }
+};
+
+const getContactNumbers = async () => {
+  try {
+    const tasks = await getTasks();
+
+    if (Array.isArray(tasks.rows)) {
+      const contactNumbers = tasks.rows.map((task: any) => task[2]); // Assuming contact number is at index 2
+      console.log("Contact numbers fetched successfully:", contactNumbers);
+      return contactNumbers;
+    } else {
+      console.error(
+        "Error: Tasks is not an array or does not have 'rows':",
+        tasks,
+      );
+      return [];
+    }
+  } catch (error) {
+    console.error("Error fetching contact numbers:", error);
+    return [];
   }
 };
 
