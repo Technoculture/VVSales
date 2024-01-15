@@ -94,8 +94,10 @@ function buildRouter(env: Env): RouterType {
 			if (!contentType || contentType.indexOf('application/json') !== 0) {
 				throw new Error('Invalid content type. Expected application/json.');
 			}
-
-			const jsonBody = (await request.json()) as CallLogsRequestBody;
+			// console.log('Request Body:', request?.body);
+			const b = await request.json();
+			console.log('Request Body B:', b);
+			const jsonBody = b as CallLogsRequestBody;
 			console.log('Parsed Request Body:', jsonBody);
 
 			if (!jsonBody || typeof jsonBody !== 'object') {
