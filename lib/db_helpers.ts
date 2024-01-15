@@ -20,7 +20,6 @@ const getContactNumbers = async () => {
 
     if (Array.isArray(tasks.rows)) {
       const contactNumbers = tasks.rows.map((task: any) => task[2]);
-      console.log("Contact numbers fetched successfully:", contactNumbers);
       return contactNumbers;
     } else {
       console.error(
@@ -85,6 +84,8 @@ const updateTask = async (taskId: number) => {
       `https://worker-turso-ts.technoculture.workers.dev/tasks/${taskId}`,
     );
     const task = await response.json();
+    console.log("Response from server:", response);
+    console.log("Task received:", task);
     task.targetCallCount = Math.max(task.targetCallCount - 1, 0);
     await fetch(
       `https://worker-turso-ts.technoculture.workers.dev/tasks/${taskId}`,

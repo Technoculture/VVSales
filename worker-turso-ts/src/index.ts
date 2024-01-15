@@ -8,6 +8,20 @@ export interface Env {
 	router?: RouterType;
 }
 
+interface CallLogsRequestBody {
+	contactNumber: string;
+	taskId: number;
+	duration: number;
+}
+
+interface TasksRequestBody {
+	name: string;
+	contactNumber: string;
+	city: string;
+	state: string;
+	targetCallCount: number;
+}
+
 export default {
 	async fetch(request: Request, env: Env): Promise<Response> {
 		if (env.router === undefined) {
@@ -33,9 +47,26 @@ function buildLibsqlClient(env: Env): LibsqlClient {
 }
 
 console.log(buildLibsqlClient);
+const headers = new Headers();
 
 function buildRouter(env: Env): RouterType {
 	const router = Router();
+
+	router.all('*', (request) => {
+		const headers = new Headers({
+			'Access-Control-Allow-Origin': '*',
+			'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+			'Access-Control-Allow-Headers': 'Content-Type',
+			'Access-Control-Max-Age': '86400',
+		});
+
+		if (request.method === 'OPTIONS') {
+			// Handle preflight requests
+			return new Response(null, { headers });
+		}
+
+		return null;
+	});
 
 	// Fetch tasks
 	router.get('/tasks', async () => {
@@ -55,7 +86,6 @@ function buildRouter(env: Env): RouterType {
 		});
 	});
 
-	// Insert call logs
 	router.post('/call-logs', async (request) => {
 		try {
 			const client = buildLibsqlClient(env);
@@ -65,7 +95,7 @@ function buildRouter(env: Env): RouterType {
 				throw new Error('Invalid content type. Expected application/json.');
 			}
 
-			const jsonBody = await request.json();
+			const jsonBody = (await request.json()) as CallLogsRequestBody;
 
 			if (!jsonBody || typeof jsonBody !== 'object') {
 				throw new Error('Invalid JSON format in the request body.');
@@ -101,30 +131,28 @@ function buildRouter(env: Env): RouterType {
 
 				return new Response('Successfully inserted into callLogs', {
 					status: 200,
-					headers: { 'Content-Type': 'text/plain' },
-				});
-			} else {
-				// Phone number not found in tasks, skip insertion
-				console.log('Phone number not found in tasks. Skipping insertion.');
-				return new Response('Phone number not found in tasks. Skipping insertion.', {
-					status: 400,
-					headers: { 'Content-Type': 'text/plain' },
+					headers: {
+						'Content-Type': 'text/plain',
+						...headers,
+					},
 				});
 			}
 		} catch (error) {
 			console.error('Error inserting into callLogs:', error);
 			return new Response('Error inserting into callLogs', {
 				status: 500,
-				headers: { 'Content-Type': 'text/plain' },
+				headers: {
+					'Content-Type': 'text/plain',
+					...headers,
+				},
 			});
 		}
 	});
 
-	// Insert tasks
 	router.post('/tasks', async (request) => {
 		try {
 			const client = buildLibsqlClient(env);
-			const jsonBody = await request.json();
+			const jsonBody = (await request.json()) as TasksRequestBody;
 			console.log('Parsed Request Body:', jsonBody);
 			const rs = await client.execute({
 				sql: 'insert into tasks (name, contactNumber, city, state, targetCallCount) values (?, ?, ?, ?, ?)',
@@ -135,19 +163,34 @@ function buildRouter(env: Env): RouterType {
 
 			return new Response('Successfully inserted into tasks', {
 				status: 200,
-				headers: { 'Content-Type': 'text/plain' },
+				headers: {
+					'Content-Type': 'text/plain',
+					...headers,
+				},
 			});
 		} catch (error) {
 			console.error('Error inserting into tasks:', error);
 			return new Response('Error inserting into tasks', {
 				status: 500,
-				headers: { 'Content-Type': 'text/plain' },
+				headers: {
+					'Content-Type': 'text/plain',
+					...headers,
+				},
 			});
 		}
 	});
 
 	// 404 - Not Found
-	router.all('*', () => new Response('Not Found.', { status: 404 }));
+	router.all(
+		'*',
+		() =>
+			new Response('Not Found.', {
+				status: 404,
+				headers: {
+					...headers,
+				},
+			}),
+	);
 
 	return router;
 }
