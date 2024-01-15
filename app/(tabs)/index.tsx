@@ -6,14 +6,7 @@ import RNImmediatePhoneCall from "react-native-immediate-phone-call";
 import call from "react-native-phone-call";
 
 import { Text, View } from "../../components/Themed";
-import {
-  getTasks,
-  getCallLogs,
-  postCallLogs,
-  updateTask,
-  getContactNumbers,
-  sync,
-} from "../../lib/db_helpers";
+import { getTasks, updateTask, getContactNumbers } from "../../lib/db_helpers";
 import { Task } from "../../lib/types";
 
 export default function TabOneScreen() {
@@ -32,8 +25,7 @@ export default function TabOneScreen() {
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
     await fetchTasks();
-    const contactNumbers = await getContactNumbers();
-    console.log("Contact Numbers:", contactNumbers);
+    await getContactNumbers();
     setRefreshing(false);
   }, []);
   useEffect(() => {

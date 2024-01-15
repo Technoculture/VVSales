@@ -96,6 +96,7 @@ function buildRouter(env: Env): RouterType {
 			}
 
 			const jsonBody = (await request.json()) as CallLogsRequestBody;
+			console.log('Parsed Request Body:', jsonBody);
 
 			if (!jsonBody || typeof jsonBody !== 'object') {
 				throw new Error('Invalid JSON format in the request body.');
@@ -121,7 +122,6 @@ function buildRouter(env: Env): RouterType {
 
 				console.log('Task trials updated:', updateTaskResponse);
 
-				// Continue with callLogs insertion
 				const rs = await client.execute({
 					sql: 'insert into callLogs (taskId, contactNumber, duration) values (?, ?, ?)',
 					args: [jsonBody.taskId, jsonBody.contactNumber, jsonBody.duration],

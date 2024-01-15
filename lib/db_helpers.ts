@@ -51,9 +51,10 @@ const postCallLogs = async (callLogs: any) => {
     // Check if the post has already been made for the current day
     const currentDate = new Date();
     const currentDateString = currentDate.toISOString().split("T")[0];
+    console.log("Current date:", currentDateString);
 
     const responseCheck = await fetch(
-      `https://worker-turso-ts.technoculture.workers.dev/call-logs?date=${currentDateString}`,
+      `https://worker-turso-ts.technoculture.workers.dev/call-logs`,
     );
 
     const existingLogs = await responseCheck.json();

@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { FlatList, RefreshControl } from "react-native";
 
 import { Text, View } from "../../components/Themed";
-import { getContactNumbers } from "../../lib/db_helpers";
+import { getContactNumbers, postCallLogs } from "../../lib/db_helpers";
 import { checkPermission, loadCallLogs } from "../../lib/permissions";
 import { CallLogItem } from "../../lib/types";
 
@@ -29,9 +29,6 @@ export default function TabTwoScreen() {
       const filteredLogs = logs.filter((log) =>
         contactNumbers.includes(log.phoneNumber),
       );
-
-      console.log("Filtered logs:", filteredLogs);
-
       const formattedLogs: CallLogItem[] = filteredLogs.map((log) => {
         return {
           phoneNumber: log.phoneNumber,
@@ -40,8 +37,6 @@ export default function TabTwoScreen() {
           callDuration: formatCallDuration(log.duration),
         };
       });
-
-      console.log("Formatted logs:", formattedLogs);
       setCallLogs(formattedLogs);
     } catch (e) {
       console.error("Error fetching call logs:", e);
@@ -51,6 +46,7 @@ export default function TabTwoScreen() {
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
     await fetchCallLogs();
+    await postCallLogs(callLogs);
     setRefreshing(false);
   }, []);
 
@@ -71,15 +67,12 @@ export default function TabTwoScreen() {
         lightColor="#eee"
         darkColor="rgba(255,255,255,0.1)"
       />
-      {/* FlatList to render call logs */}
       <FlatList
         data={callLogs}
         keyExtractor={(_, index) => index.toString()}
         renderItem={({ item }: { item: CallLogItem }) => (
           <View>
             <Text>{`Phone Number: ${item.phoneNumber}`}</Text>
-            <Text>{`Call Type: ${item.callType}`}</Text>
-            <Text>{`Call Date: ${item.callDate}`}</Text>
             <Text>{`Call Duration: ${item.callDuration}`}</Text>
             <View className="border-b border-black mb-10" />
           </View>
