@@ -6,6 +6,9 @@ const config = getDefaultConfig(__dirname, {
   // [Web-only]: Enables CSS support in Metro.
   isCSSEnabled: true,
 });
+
+config.resolver.sourceExts.push("sql");
+
 module.exports = {
   ...config,
   watchFolders: [path.resolve(__dirname, "..")],

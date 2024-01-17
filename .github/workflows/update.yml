@@ -1,6 +1,6 @@
 name: update
 on:
-  push: 
+  push:
     branches:
       - release
 
