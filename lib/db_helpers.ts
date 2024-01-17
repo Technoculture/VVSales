@@ -1,3 +1,4 @@
+import { ToastAndroid } from "react-native";
 import CallLogs from "react-native-call-log";
 
 import { checkPermission, loadCallLogs } from "../lib/permissions";
@@ -48,33 +49,29 @@ const getCallLogs = async () => {
 
 const postCallLogs = async (callLogs: any) => {
   try {
-    // Check if the post has already been made for the current day
-    const currentDate = new Date();
-    const currentDateString = currentDate.toISOString().split("T")[0];
-    console.log("Current date:", currentDateString);
-
-    const responseCheck = await fetch(
-      `https://worker-turso-ts.technoculture.workers.dev/call-logs`,
-    );
-
-    const existingLogs = await responseCheck.json();
-
-    if (existingLogs.rows.length === 0) {
-      const response = await fetch(
-        "https://worker-turso-ts.technoculture.workers.dev/call-logs",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(callLogs),
+    // const toastString = `Posting call logs: ${JSON.stringify(callLogs)}`;
+    // ToastAndroid.show(toastString, ToastAndroid.SHORT);
+    const form = new FormData();
+    form.append("callLogs", callLogs);
+    const toastForm = `Form data: ${JSON.stringify(form)}`;
+    ToastAndroid.show(toastForm, ToastAndroid.SHORT);
+    const response = await fetch(
+      "https://worker-turso-ts.technoculture.workers.dev/call-logs",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
-      console.log("Call logs posted successfully:", response);
-    } else {
-      console.log("Call logs already posted for today.");
-    }
+        body: form,
+      },
+    );
+    const toastSuccess = `Call logs posted successfully: ${JSON.stringify(
+      response,
+    )}`;
+    ToastAndroid.show(toastSuccess, ToastAndroid.SHORT);
   } catch (error) {
+    const toastError = `Error posting call logs: ${error}`;
+    ToastAndroid.show(toastError, ToastAndroid.SHORT);
     console.error("Error posting call logs:", error);
   }
 };

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Client as LibsqlClient, createClient } from '@libsql/client/web';
 import { Router, IRequest } from 'itty-router';
 const router = Router();
@@ -50,8 +51,9 @@ router.get('/call-logs', async (request, env) => {
 router.post('/call-logs', async (request: IRequest, env) => {
 	try {
 		const client = buildLibsqlClient(env);
-		const jsonBody = (await request.json()) as CallLogsRequestBody; //expecting this from an array of objects
-
+		// const jsonBody = (await request.json()) as CallLogsRequestBody; //expecting this from an array of objects
+		const FormData = await request.formData();
+		const jsonBody = JSON.parse(FormData.get('callLogs') as string);
 		console.log('Parsed Request Body:', jsonBody);
 
 		// Check if the contactNumber exists in tasks
@@ -74,13 +76,13 @@ router.post('/call-logs', async (request: IRequest, env) => {
 
 		// 	console.log('Task trials updated:', updateTaskResponse);
 
-			// Continue with callLogs insertion
-			// const rs = await client.execute({
-			// 	sql: 'insert into callLogs (taskId, contactNumber, duration) values (?, ?, ?)',
-			// 	args: [jsonBody.taskId, jsonBody.contactNumber, jsonBody.duration],
-			// });
+		// Continue with callLogs insertion
+		// const rs = await client.execute({
+		// 	sql: 'insert into callLogs (taskId, contactNumber, duration) values (?, ?, ?)',
+		// 	args: [jsonBody.taskId, jsonBody.contactNumber, jsonBody.duration],
+		// });
 
-			// console.log('SQL Execution Result:', rs);
+		// console.log('SQL Execution Result:', rs);
 
 		// 	return new Response('Successfully inserted into callLogs', {
 		// 		status: 200,

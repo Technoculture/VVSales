@@ -32,8 +32,6 @@ export default function TabTwoScreen() {
       const formattedLogs: CallLogItem[] = filteredLogs.map((log) => {
         return {
           phoneNumber: log.phoneNumber,
-          callType: log.callType,
-          callDate: new Date(log.timestamp).toLocaleString(),
           callDuration: formatCallDuration(log.duration),
         };
       });
@@ -48,7 +46,7 @@ export default function TabTwoScreen() {
     await fetchCallLogs();
     await postCallLogs(callLogs);
     setRefreshing(false);
-  }, []);
+  }, [callLogs]);
 
   useEffect(() => {
     fetchCallLogs();

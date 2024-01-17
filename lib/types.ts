@@ -29,7 +29,5 @@ export interface Task {
 
 export interface CallLogItem {
   phoneNumber: string;
-  callType: string;
-  callDate: string;
   callDuration: string;
 }

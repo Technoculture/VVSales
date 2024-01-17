@@ -4,6 +4,7 @@ declare module "react-native-call-log" {
     callType: string;
     callDate: string;
     callDuration: string;
+    duration: number;
     timestamp: number;
   }
 
