@@ -52,7 +52,7 @@ const postCallLogs = async (callLogs: any) => {
     // const toastString = `Posting call logs: ${JSON.stringify(callLogs)}`;
     // ToastAndroid.show(toastString, ToastAndroid.SHORT);
     const form = new FormData();
-    form.append("callLogs", callLogs);
+    form.append("callLogs", JSON.stringify(callLogs));
     const toastForm = `Form data: ${JSON.stringify(form)}`;
     ToastAndroid.show(toastForm, ToastAndroid.SHORT);
     const response = await fetch(
@@ -60,7 +60,7 @@ const postCallLogs = async (callLogs: any) => {
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          // "Content-Type": "application/json",
         },
         body: form,
       },
