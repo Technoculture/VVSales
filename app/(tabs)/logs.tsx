@@ -69,9 +69,9 @@ export default function TabTwoScreen() {
         data={callLogs}
         keyExtractor={(_, index) => index.toString()}
         renderItem={({ item }: { item: CallLogItem }) => (
-          <View>
-            <Text>{`Phone Number: ${item.phoneNumber}`}</Text>
-            <Text>{`Call Duration: ${item.callDuration}`}</Text>
+          <View className="mb-10">
+            <Text className="font-bold">{`Phone Number: ${item.phoneNumber}`}</Text>
+            <Text className="font-bold">{`Call Duration: ${item.callDuration}`}</Text>
             <View className="border-b border-black mb-10" />
           </View>
         )}
